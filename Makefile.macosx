@@ -1,0 +1,37 @@
+CC=clang
+CXX_FLAGS=-c -Wall -std=c++11
+LDFLAGS=-lstdc++ 
+CXX_SOURCES= \
+	src/Apriori.cpp \
+	src/ConnectionTable.cpp \
+	src/CoocurrenceGraph.cpp \
+	src/DataStreamMining.cpp \
+	src/FPNode.cpp \
+	src/FPTree.cpp \
+	src/Harm.cpp \
+	src/InvertedDataSetIndex.cpp \
+	src/Item.cpp \
+	src/ItemSet.cpp \
+	src/MinAbsSupFilter.cpp \
+	src/Options.cpp \
+	src/PatternStream.cpp \
+	src/StructuralStreamDriftDetector.cpp \
+	src/TidList.cpp \
+	src/utils.cpp \
+	src/VariableWindowDataSet.cpp \
+	src/WindowIndex.cpp
+
+OBJECTS=$(CXX_SOURCES:.cpp=.o)
+EXECUTABLE=harm.exe
+
+all: $(CXX_SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.cpp.o:
+	$(CC) $(CXX_FLAGS) $< -o $@
+
+clean:
+	rm $(EXECUTABLE)
+	rm src/*.o

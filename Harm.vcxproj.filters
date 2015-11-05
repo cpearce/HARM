@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Apriori.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoocurrenceGraph.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FPTree.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Harm.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InvertedDataSetIndex.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Item.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ItemSet.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MinAbsSupFilter.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Options.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PatternStream.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TidList.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WindowIndex.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FPNode.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DataStreamMining.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StructuralStreamDriftDetector.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VariableWindowDataSet.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConnectionTable.cpp">
+      <Filter>C++ Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\AprioriFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CoocurrenceGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataSetReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InvertedDataSetIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ItemMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ItemSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\List.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PatternStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TidList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WindowIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FPNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FPTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CanTreeFunctor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CPTreeFunctor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpoTreeFunctor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ExtrapTreeFunctor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DDTreeFunctor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DiscTreeFunctor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataStreamMining.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StructuralStreamDriftDetector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VariableWindowDataSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConnectionTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ef74892b-913d-4160-ad52-eaa3d6114353}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C++ Source Files">
+      <UniqueIdentifier>{8a3c8cad-5d5f-499f-a337-eaaed92299be}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

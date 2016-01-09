@@ -76,7 +76,9 @@ StructuralStreamDriftDetector::StructuralStreamDriftDetector(
   bool _window_cmp,
   bool _print_blocks,
   bool _adaptive_window,
-  bool _almost_exact)
+  bool _almost_exact,
+  bool _use_distribution_drift,
+  double _dbdd_delta)
   : check_interval(_check_interval),
     have_structure_drift_threshold(_have_structure_drift_threshold),
     structure_drift_threshold(_structure_drift_threshold),
@@ -94,7 +96,10 @@ StructuralStreamDriftDetector::StructuralStreamDriftDetector(
     tree(FPNode::CreateRoot()),
     data_set(new VariableWindowDataSet()),
     aw_check_interval(1032), //1032
-    purgeThreshold(0.5) {
+    purgeThreshold(0.5),
+    use_distribution_drift(_use_distribution_drift),
+    dbdd_delta(_dbdd_delta)
+{
 }
 
 void StructuralStreamDriftDetector::Init(MiningContext* miner) {
@@ -501,12 +506,92 @@ void StructuralStreamDriftDetector::PurgeBlocksUpTo(int block_index) {
 int StructuralStreamDriftDetector::FindLastUnstableCheckPoint() {
   Log("Checking instability of previous blocks...%s\n",
       ((check_points.size() > 1) ? "" : " no previous blocks yet..."));
-
-  if (window_cmp) {
+  if (use_distribution_drift) {
+    return FindUnstableCheckPointByDistributionChange();
+  }
+  else if (window_cmp) {
     return FindUnstableCheckPointByPartition();
-  } else {
+  }
+  else {
     return FindUnstableCheckPointByProgressive();
   }
+}
+
+uint32_t
+StructuralStreamDriftDetector::SizeOfWindow(std::vector<CheckPoint>::const_iterator start,
+                                            std::vector<CheckPoint>::const_iterator end)
+{
+  uint32_t sz = 0;
+  for_each(start, end, [&](const CheckPoint& checkPoint) {
+      sz += checkPoint.Size();
+  });
+  return sz;
+}
+
+static double
+Variance(const uint32_t count, const uint32_t N)
+{
+  // Variance is defined as 1/N * E[(x-mu)^2]. We consider our X to be a
+  // stream of N instances of [0,1] values; 1 if item appears in a transaction,
+  // 0 if not. We know that the average is count/N, and that X is 1
+  // count times, and 0 (N-count) times, so the variance then becomes:
+  // 1/N * (count * (1 - support)^2 + (N-count) * (0 - support)^2).
+  double support = (double)count / N;
+  return (count * pow(1-support, 2) + (N - count) * pow(0-support, 2)) / N;
+}
+
+int
+StructuralStreamDriftDetector::FindUnstableCheckPointByDistributionChange()
+{
+  if (check_points.size() == 1) {
+    return -1;
+  }
+
+  // Accumulate all the check point's frequency tables, so we know all items
+  // in the window.
+  ItemMap<unsigned> items;
+  for (const CheckPoint& checkPoint : check_points) {
+    items.Add(checkPoint.frequency_table);
+  }
+
+  ItemMap<unsigned> lhs(items);
+  ItemMap<unsigned> rhs;
+
+  int32_t block_index = check_points.size() - 2;
+  while (block_index > 0) {
+
+    lhs.Remove(check_points[block_index + 1].frequency_table);
+    rhs.Add(check_points[block_index + 1].frequency_table);
+
+    auto begin = check_points.begin();
+    int32_t n_lhs = SizeOfWindow(begin, begin + block_index);
+    int32_t n_rhs = SizeOfWindow(begin + block_index, check_points.end());
+    uint32_t n = n_lhs + n_rhs;
+    ASSERT(n == SizeOfWindow(begin, check_points.end()));
+
+    for (auto itr = items.GetIterator(); itr.HasNext(); itr.Next()) {
+      Item item = itr.GetKey();
+      uint32_t u_lhs = lhs.Get(item);
+      uint32_t u_rhs = rhs.Get(item);
+      double v_lhs = Variance(u_lhs, n_lhs);
+      double v_rhs = Variance(u_rhs, n_rhs);
+      double v = Variance(items.Get(item), n);
+
+      double absValue = u_lhs / n_lhs - u_rhs / n_rhs;
+      const double mintMinWinLength = 5; // value copied from adWin.java
+      double dd = log(2 * log(n) / dbdd_delta);
+      double m = ((double)1 / ((n_rhs - mintMinWinLength + 1))) +
+                 ((double)1 / ((n_lhs - mintMinWinLength + 1)));
+      double epsilon = sqrt(2 * m * v * dd) + (double)2 / 3 * dd * m;
+
+      bool shouldCut = abs(absValue) > epsilon;
+      if (shouldCut) {
+        return block_index;
+      }
+    }
+    block_index--;
+  }
+  return -1;
 }
 
 int

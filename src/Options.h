@@ -37,6 +37,7 @@ enum eRunModeType {
   kDiscTree,
   kDDTreeStream,
   kSSDD, // Structural Stream Drift Detector
+  kDBDD, // Distribution Based Drift Detector
 };
 
 std::string GetRunMode(eRunModeType kMode);
@@ -115,7 +116,7 @@ public:
   double ssdd_item_frequency_merge_threshold;
 
   bool ssdd_window_cmp;
-  bool ssdd_print_blocks;
+  bool dd_print_blocks;
 
   bool useKernelRegression;
   int32_t dataPoints;
@@ -126,6 +127,8 @@ public:
   std::ofstream ddResultsFile;
   // Array of transaction numbers to dump tree info on.
   std::vector<unsigned> logTreeTxn;
+
+  double dbdd_delta;
 };
 
 

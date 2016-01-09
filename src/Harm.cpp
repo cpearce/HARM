@@ -126,6 +126,7 @@ int main(int argc, const char* argv[]) {
       FPTreeMiner(options);
       break;
     case kSSDD:
+    case kDBDD:
       MineDataStream(options);
       break;
     default:

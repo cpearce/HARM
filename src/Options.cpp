@@ -52,6 +52,7 @@ static Mode sTypes[] = {
   {"disctree", kDiscTree},
   {"DDTreeStream", kDDTreeStream},
   {"SSDD", kSSDD},
+  {"DBDD", kDBDD},
 };
 
 eRunModeType GetRunMode(string& mode) {
@@ -85,6 +86,7 @@ static bool ModeRequiresBlockSize(eRunModeType aMode) {
     case kDiscTree:
     case kDDTreeStream:
     case kSSDD:
+    case kDBDD:
       return true;
     default:
       return false;
@@ -426,7 +428,7 @@ bool ParseArgs(int argc, const char* argv[], Options& options) {
     }
 
     options.ssdd_window_cmp = ParseBoolArg("ssdd-window-cmp", args);
-    options.ssdd_print_blocks = ParseBoolArg("ssdd-print-blocks", args);
+    options.dd_print_blocks = ParseBoolArg("ssdd-print-blocks", args);
 
     if ((!options.have_automatic_ssdd_structural_drift_threshold && !options.have_ssdd_structural_drift_threshold) &&
         !options.have_ssdd_item_frequency_drift_threshold) {
@@ -435,6 +437,21 @@ bool ParseArgs(int argc, const char* argv[], Options& options) {
       //modified by Minh
       return false;
     }
+  }
+
+  if (options.mode == kDBDD) {
+    options.dd_print_blocks = ParseBoolArg("dbdd-print-blocks", args);
+    if (!ParseDouble("dbdd-delta",
+                     args,
+                     options.dbdd_delta,
+                     true,
+                     std::numeric_limits<double>::quiet_NaN(),
+                     0.0,
+                     1.0)) {
+      cerr << "Fail: with DBDD mode you must specify -dbdd-delta in range [0,1]" << endl;
+      return false;
+    }
+    options.adaptive_windows = true;
   }
 
   if (args.size()) {

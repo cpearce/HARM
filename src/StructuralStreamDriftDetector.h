@@ -37,9 +37,11 @@ public:
                                 bool have_item_freq_merge_thresold,
                                 double item_freq_merge_threshold,
                                 bool ssdd_window_cmp,
-                                bool ssdd_print_blocks,
+                                bool dd_print_blocks,
                                 bool adaptive_window,
-                                bool almost_exact);
+                                bool almost_exact,
+                                bool use_distribution_drift,
+                                double dbdd_delta);
 
   void Add(Transaction& transaction) override;
   void Init(MiningContext* miner) override;
@@ -70,6 +72,8 @@ private:
   // Returns the index of the last check point in check_points that is
   // "unstable", or -1 if all blocks are stable.
   int FindLastUnstableCheckPoint();
+
+  int FindUnstableCheckPointByDistributionChange();
 
   // Drops all transactions in the check_points up to an including block
   // with index |block_index|.
@@ -108,6 +112,9 @@ private:
   const bool window_cmp;
   const bool print_blocks;
 
+  const bool use_distribution_drift;
+  const double dbdd_delta;
+
   std::unique_ptr<FPNode> tree;
 
   std::unique_ptr<VariableWindowDataSet> data_set;
@@ -136,12 +143,18 @@ private:
         conn_table(_conn_table) {
     }
 
+    uint32_t Size() const {
+      return end_tid - start_tid;
+    }
 
     TransactionId start_tid;
     TransactionId end_tid;
     ItemMap<unsigned> frequency_table;
     ConnectionTable conn_table;
   };
+
+  uint32_t SizeOfWindow(std::vector<CheckPoint>::const_iterator start,
+                        std::vector<CheckPoint>::const_iterator end);
 
   const double purgeThreshold; // threshod in almost-exact mode
 

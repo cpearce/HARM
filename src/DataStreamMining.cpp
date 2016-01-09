@@ -51,7 +51,7 @@ void MiningContext::Mine(FPNode* root, DataSet* dataset) {
 
 StreamMiner* CreateStreamMiner(const Options& options) {
   // TODO: Add other modes in here.
-  assert(options.mode == kSSDD);
+  assert(options.mode == kSSDD || options.mode == kDBDD);
   return new StructuralStreamDriftDetector(options.blockSize,
          options.have_automatic_ssdd_structural_drift_threshold,
          options.have_ssdd_structural_drift_threshold,
@@ -63,14 +63,16 @@ StreamMiner* CreateStreamMiner(const Options& options) {
          options.have_ssdd_item_frequency_merge_threshold,
          options.ssdd_item_frequency_merge_threshold,
          options.ssdd_window_cmp,
-         options.ssdd_print_blocks,
+         options.dd_print_blocks,
          options.adaptive_windows,
-         options.almost_exact);
+         options.almost_exact,
+         (options.mode == kDBDD),
+         options.dbdd_delta);
 }
 
 void MineDataStream(const Options& options) {
   // Currently only SSDD mode supported in MineDataStream.
-  assert(options.mode == kSSDD);
+  assert(options.mode == kSSDD || options.mode == kDBDD);
 
   MiningContext context(options);
   unique_ptr<StreamMiner> miner(CreateStreamMiner(options));

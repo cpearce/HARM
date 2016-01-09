@@ -485,7 +485,8 @@ void FPTreeMiner(Options& options) {
                            options.mode == kDDTreeStream ||
                            options.mode == kStream ||
                            options.mode == kDiscTree ||
-                           options.mode == kSSDD;
+                           options.mode == kSSDD ||
+                           options.mode == kDBDD;
 
   Log("\nLoading dataset into tree...\n");
   AutoPtr<DataSet> index = 0;

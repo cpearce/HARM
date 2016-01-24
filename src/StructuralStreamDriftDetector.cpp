@@ -460,7 +460,6 @@ void StructuralStreamDriftDetector::Add(Transaction& transaction) {
     } else {
       Log("Tree is stable, not mining for rules...\n");
     }
-    //tree->Sort();
   }
 }
 

@@ -20,6 +20,7 @@
 #include <vector>
 #include <algorithm>
 #include "ConnectionTable.h"
+#include <cmath>
 
 using namespace std;
 

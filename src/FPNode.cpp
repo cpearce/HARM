@@ -28,7 +28,7 @@ FPNode::~FPNode() {
       if (next) {
         // We have a next, set the first entry to that.
         headerTable->Set(item, next);
-        next->prev = 0;
+        next->prev = nullptr;
       } else {
         // No next, just erase the entry for this item.
         headerTable->Erase(item);
@@ -59,9 +59,9 @@ FPNode::~FPNode() {
     delete freq;
     delete iList;
   }
-  headerTable = 0;
-  freq = 0;
-  leaves = 0;
+  headerTable = nullptr;
+  freq = nullptr;
+  leaves = nullptr;
 }
 
 string FPNode::ToString() const {
@@ -247,7 +247,7 @@ unsigned FPNode::NumNodes() const {
 
 void FPNode::DumpToGraphViz(const char* filename) const {
   FILE* f = fopen(filename, "w");
-  ASSERT(f != NULL);
+  ASSERT(f);
   fprintf(f, "digraph G {\n");
   fprintf(f, "\troot;\n");
   DumpToGraphViz(f, "root");
@@ -308,8 +308,8 @@ void FPNode::Insert(vector<Item>& txn,
 
   Item item = txn[idx];
   map<Item, FPNode*>::iterator itr = children.find(item);
-  FPNode* node = (itr != children.end()) ? itr->second : 0;
-  if (node == 0) {
+  FPNode* node = (itr != children.end()) ? itr->second : nullptr;
+  if (!node) {
     // Item is not in child list, create a new node for it.
     node = new FPNode(item, this, headerTable, freq, leaves, count, iList, depth + 1);
 
@@ -346,7 +346,7 @@ void FPNode::Remove(const vector<Item>& path, unsigned idx, unsigned count) {
 
   Item item = path[idx];
   FPNode* node = children[item];
-  ASSERT(node != 0);
+  ASSERT(node);
 
   ASSERT(node->count >= count);
   node->count -= count;
@@ -366,7 +366,7 @@ void FPNode::Remove(const vector<Item>& path, unsigned idx, unsigned count) {
     ASSERT(this == node->parent);
 
     delete node;
-    node = 0;
+    node = nullptr;
     if (!IsRoot() && count > 0 && IsLeaf()) {
       ASSERT(!leafToken.IsInList());
       leafToken = leaves->Append(this);
@@ -394,11 +394,11 @@ void FPNode::AddToHeaderTable(FPNode* node) {
   if (headerTable->Contains(node->item)) {
     FPNode* list = headerTable->Get(node->item);
     node->next = list;
-    ASSERT(list->prev == 0);
+    ASSERT(!list->prev);
     list->prev = node;
   } else {
-    ASSERT(node->prev == 0);
-    ASSERT(node->next == 0);
+    ASSERT(!node->prev);
+    ASSERT(!node->next);
   }
   headerTable->Set(node->item, node);
 }

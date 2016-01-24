@@ -53,7 +53,8 @@ FPNode::~FPNode() {
   }
   children.clear();
   if (IsRoot()) {
-    // The root owns the header table, destory it if this is the root.
+    // The root owns the header table and other shared data.
+    // We must delete them if we're the root.
     delete headerTable;
     delete leaves;
     delete freq;

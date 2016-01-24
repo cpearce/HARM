@@ -302,7 +302,7 @@ void FPNode::SortTransaction(vector<Item>& transaction) {
   }
 }
 
-void FPNode::Insert(vector<Item>& txn,
+void FPNode::Insert(const vector<Item>& txn,
                     unsigned idx,
                     unsigned count) {
   ASSERT(idx < txn.size());

@@ -144,13 +144,13 @@ public:
   // we have one, otherwise it's sorted in order of item appearance.
   void SortTransaction(std::vector<Item>& txn);
 
-  void Insert(std::vector<Item>& txn) {
+  void Insert(const std::vector<Item>& txn) {
     if (txn.size() > 0) {
       Insert(txn, 0, 1);
     }
   }
 
-  void Insert(std::vector<Item>& txn, unsigned count) {
+  void Insert(const std::vector<Item>& txn, unsigned count) {
     if (txn.size() > 0) {
       Insert(txn, 0, count);
     }
@@ -223,7 +223,7 @@ private:
   // Inserts the items in txn into the tree. Increments the support count by
   // |count|. idx is the index into txn which we're currently adding, idx+1
   // is added to this node's children, and so on.
-  void Insert(std::vector<Item>& txn,
+  void Insert(const std::vector<Item>& txn,
               unsigned idx,
               unsigned count);
 

@@ -45,6 +45,6 @@ public:
     AppearanceCmp cmp;
     std::vector<Item> t(txn);
     sort(t.begin(), t.end(), cmp);
-    mTree->Remove(t, 0, 1);
+    mTree->Remove(t);
   }
 };

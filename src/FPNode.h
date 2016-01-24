@@ -145,15 +145,11 @@ public:
   void SortTransaction(std::vector<Item>& txn);
 
   void Insert(const std::vector<Item>& txn) {
-    if (txn.size() > 0) {
-      Insert(txn, 0, 1);
-    }
+    Insert(txn, 1);
   }
 
   void Insert(const std::vector<Item>& txn, unsigned count) {
-    if (txn.size() > 0) {
-      Insert(txn, 0, count);
-    }
+    Insert(txn.begin(), txn.end(), count);
   }
 
   std::string ToString() const;
@@ -172,9 +168,15 @@ public:
 
   void DumpToGraphViz(const char* filename) const;
 
-  void Remove(const std::vector<Item>& path, unsigned idx, unsigned count);
+  void Remove(const std::vector<Item>& path);
 
 private:
+  void Remove(std::vector<Item>::const_iterator begin,
+              std::vector<Item>::const_iterator end,
+              unsigned count);
+
+  FPNode* FPNode::GetOrCreateChild(Item aItem);
+  FPNode* FPNode::GetChild(Item aItem) const;
 
   void Replace(const std::vector<Item>& from,
                const std::vector<Item>& to,
@@ -227,8 +229,8 @@ private:
   // Inserts the items in txn into the tree. Increments the support count by
   // |count|. idx is the index into txn which we're currently adding, idx+1
   // is added to this node's children, and so on.
-  void Insert(const std::vector<Item>& txn,
-              unsigned idx,
+  void Insert(std::vector<Item>::const_iterator begin,
+              std::vector<Item>::const_iterator end,
               unsigned count);
 
   void AddToHeaderTable(FPNode* n);

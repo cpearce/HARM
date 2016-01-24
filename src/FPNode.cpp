@@ -302,17 +302,18 @@ void FPNode::SortTransaction(vector<Item>& transaction) {
   }
 }
 
-void FPNode::Insert(const vector<Item>& txn,
-                    unsigned idx,
-                    unsigned count) {
-  ASSERT(idx < txn.size());
+FPNode* FPNode::GetChild(Item aItem) const
+{
+  map<Item, FPNode*>::const_iterator itr = children.find(aItem);
+  return (itr != children.end()) ? itr->second : nullptr;
+}
 
-  Item item = txn[idx];
-  map<Item, FPNode*>::iterator itr = children.find(item);
-  FPNode* node = (itr != children.end()) ? itr->second : nullptr;
+FPNode* FPNode::GetOrCreateChild(Item aItem)
+{
+  FPNode* node = GetChild(aItem);
   if (!node) {
     // Item is not in child list, create a new node for it.
-    node = new FPNode(item, this, headerTable, freq, leaves, count, iList, depth + 1);
+    node = new FPNode(aItem, this, headerTable, freq, leaves, 0, iList, depth + 1);
 
     if (!IsRoot() && IsLeaf()) {
       // We're about to add a child node, so we'll stop being a leaf.
@@ -321,32 +322,39 @@ void FPNode::Insert(const vector<Item>& txn,
       leaves->Erase(leafToken);
       ASSERT(!leafToken.IsInList());
     }
-    children[item] = node;
+    children[aItem] = node;
     ASSERT(!IsLeaf());
 
     // Add new item to the headerTable.
     AddToHeaderTable(node);
-  } else {
-    // Item already in child list, increment its count.
-    node->count += count;
   }
-  freq->Set(item, freq->Get(item, 0) + count);
-
-  if (idx + 1 < txn.size()) {
-    // Recurse onto the child nodes.
-    node->Insert(txn, idx + 1, count);
-  }
-
-  ASSERT(!IsLeaf() || leafToken.IsInList());
-
+  return node;
 }
 
-void FPNode::Remove(const vector<Item>& path, unsigned idx, unsigned count) {
-  ASSERT(idx < path.size());
-  ASSERT(IsRoot() || this->item == path[idx - 1]);
+void FPNode::Insert(std::vector<Item>::const_iterator aBegin,
+                    std::vector<Item>::const_iterator aEnd,
+                    unsigned aCount) {
+  FPNode* parent = this;
+  for (aBegin; aBegin != aEnd; aBegin++) {
+    Item item = *aBegin;
+    FPNode* node = parent->GetOrCreateChild(item);
+    node->count += aCount;
+    freq->Set(item, freq->Get(item, 0) + aCount);
+    parent = node;
+  }
+}
 
-  Item item = path[idx];
-  FPNode* node = children[item];
+void FPNode::Remove(const std::vector<Item>& path)
+{
+  Remove(path.begin(), path.end(), 1);
+}
+
+void FPNode::Remove(std::vector<Item>::const_iterator begin,
+                    std::vector<Item>::const_iterator end,
+                    unsigned count)
+{
+  Item item = *begin;
+  FPNode* node = GetChild(item);
   ASSERT(node);
 
   ASSERT(node->count >= count);
@@ -355,8 +363,9 @@ void FPNode::Remove(const vector<Item>& path, unsigned idx, unsigned count) {
   ASSERT(freq->Contains(item));
   freq->Set(item, freq->Get(item) - count);
 
-  if (idx + 1 < path.size()) {
-    node->Remove(path, idx + 1, count);
+  begin++;
+  if (begin != end) {
+    node->Remove(begin, end, count);
   }
 
   ASSERT(!node->IsLeaf() || node->leafToken.IsInList());
@@ -549,11 +558,11 @@ void FPNode::Replace(const vector<Item>& from,
     if (from[index] != to[index]) {
       break;
     }
-    node = node->children[from[index]];
+    node = node->GetChild(from[index]);
     ASSERT(node);
     index++;
   }
 
-  node->Remove(from, index, count);
-  node->Insert(to, index, count);
+  node->Remove(from.begin() + index, from.end(), count);
+  node->Insert(to.begin() + index, to.end(), count);
 }

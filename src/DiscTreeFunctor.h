@@ -116,7 +116,7 @@ public:
       mItemFreq.Set(x, count - 1);
     });
 
-    mTree->Remove(t, 0, 1);
+    mTree->Remove(t);
   }
 
   void EnsureSorted(std::vector<Item>& t) {

@@ -475,7 +475,7 @@ void StructuralStreamDriftDetector::PurgeBlocksUpTo(int block_index) {
          data_set->Front().id <= end_tid) {
     Transaction transaction = data_set->Front();
     tree->SortTransaction(transaction.items);
-    tree->Remove(transaction.items, 0, 1);
+    tree->Remove(transaction.items);
     data_set->Pop();
 
     // Iterate over the non-purged blocks, and update their frequency tables

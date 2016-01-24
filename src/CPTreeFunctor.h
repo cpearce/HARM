@@ -57,7 +57,7 @@ public:
     if (mIsStreaming) {
       std::vector<Item> t(txn);
       mTree->SortTransaction(t);
-      mTree->Remove(t, 0, 1);
+      mTree->Remove(t);
     }
   }
 

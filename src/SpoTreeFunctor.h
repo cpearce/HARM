@@ -161,7 +161,7 @@ public:
     } else {
       sort(t.begin(), t.end(), AppearanceCmp());
     }
-    mTree->Remove(t, 0, 1);
+    mTree->Remove(t);
   }
 
   void OnEndLoad() override {

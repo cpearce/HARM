@@ -277,7 +277,7 @@ public:
       sort(t.begin(), t.end(), AppearanceCmp());
       ASSERT(VerifySortedByAppearance(t));
     }
-    mTree->Remove(t, 0, 1);
+    mTree->Remove(t);
   }
 
   ItemMap<double> mList;

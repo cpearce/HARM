@@ -439,9 +439,9 @@ void StructuralStreamDriftDetector::Add(Transaction& transaction) {
       arrangeCheckPoints(2);
     }
 
-    Log("\nHave %d check points with %d transactions in range [%u,%u]\n",
+    Log("\nHave %d check points, a total of %d transactions in range [%u,%u]\n",
         check_points.size(),
-        check_points.back().end_tid - check_points.back().start_tid,
+        check_points.back().end_tid - check_points.front().start_tid,
         check_points.front().start_tid,
         check_points.back().end_tid);
 

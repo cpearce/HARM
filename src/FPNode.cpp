@@ -64,22 +64,6 @@ FPNode::~FPNode() {
   leaves = 0;
 }
 
-//string FPNode::ToString() const {
-//  string s("(");
-//  s.append(IsRoot() ? "root" : item);
-//  s.append(":");
-//  s.append(std::to_string(count));
-//  map<Item, FPNode*>::const_iterator itr = children.begin();
-//  while (itr != children.end()) {
-//    s.append(" ");
-//    s.append(itr->second->ToString());
-//    itr++;
-//
-//  }
-//  s.append(")");
-//  //s.append("*");
-//  return s;
-//}
 string FPNode::ToString() const {
   string s("(");
   s.append(item.IsNull() ? "root" : item);
@@ -95,7 +79,6 @@ string FPNode::ToString() const {
   s.append(")");
   return s;
 }
-
 
 string FPNode::ToString(int stopDepth) const {
   if (depth >= stopDepth) {
@@ -115,35 +98,6 @@ string FPNode::ToString(int stopDepth) const {
   s.append(")");
   return s;
 }
-
-//string FPNode::ToString(int stopDepth) const {
-//  if (depth >= stopDepth) {
-//    return string("");
-//  }
-//  string s("(");
-//  //s.append(item.IsNull() ? "-1" : item); org
-//  //s.append(":");
-//  char buf[32];
-//  //---Test------
-//  int id = item.IsNull() ? -1 : item.GetId();
-//  sprintf_s(buf, 32, "%u", id);
-//  s.append(buf);
-//  //s.append(item.IsNull() ? "-1" : ""+item.GetId());//test
-//  //-------------
-//  //sprintf_s(buf, 32, "%u", count);
-//  //s.append(buf);
-//  // s.append(")");
-//  map<Item, FPNode*>::const_iterator itr = children.begin();
-//  while (itr != children.end()) {
-//    s.append(" ");
-//    s.append(itr->second->ToString());
-//    itr++;
-//
-//  }
-//  s.append(")");
-//  // s.append("*");
-//  return s;
-//}
 
 void FPNode::ToFile(char* fn) {
   ofstream fp(fn);
@@ -437,7 +391,6 @@ static bool NotInList(const FPNode* node, const FPNode* list) {
 }
 
 void FPNode::AddToHeaderTable(FPNode* node) {
-  //ASSERT(NotInList(node, headerTable->Get(node->item, 0)));
   if (headerTable->Contains(node->item)) {
     FPNode* list = headerTable->Get(node->item);
     node->next = list;

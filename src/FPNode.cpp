@@ -524,12 +524,36 @@ void FPNode::Sort(ItemComparator* cmp) {
     vector<Item> spath(path.begin(), path.end());
     sort(spath.begin(), spath.end(), comparator);
     if (spath != path) {
-      // Path needs to be sorted. Remove, then re-add it sorted.
-      Remove(path, 0, count);
-      Insert(spath, count);
+      // Path after sort is different. We need to replace the now
+      // unsorted path in the tree with a sorted path.
+      Replace(path, spath, count);
     }
   }
   ASSERT(IsSorted());
 
   Log("Sort took %.3lfs\n", timer.Seconds());
+}
+
+void FPNode::Replace(const vector<Item>& from,
+                     const vector<Item>& to,
+                     uint32_t count)
+{
+  ASSERT(IsRoot());
+
+  // Walk down the two paths to find where they differ, then we only need to
+  // remove and reinsert the difference in path.
+  FPNode* node = this;
+  ASSERT(from.size() == to.size());
+  size_t index = 0;
+  while (index < from.size()) {
+    if (from[index] != to[index]) {
+      break;
+    }
+    node = node->children[from[index]];
+    ASSERT(node);
+    index++;
+  }
+
+  node->Remove(from, index, count);
+  node->Insert(to, index, count);
 }

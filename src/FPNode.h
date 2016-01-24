@@ -176,6 +176,10 @@ public:
 
 private:
 
+  void Replace(const std::vector<Item>& from,
+               const std::vector<Item>& to,
+               uint32_t count);
+
   void DumpToGraphViz(FILE* f, std::string p) const;
 
   bool DoIsSorted() const;

@@ -171,6 +171,9 @@ public:
   void Remove(const std::vector<Item>& path);
 
 private:
+
+  void Decrement(uint32_t aCount);
+
   void Remove(std::vector<Item>::const_iterator begin,
               std::vector<Item>::const_iterator end,
               unsigned count);

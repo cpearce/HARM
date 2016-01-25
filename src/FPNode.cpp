@@ -44,6 +44,9 @@ FPNode::~FPNode() {
       leaves->Erase(leafToken);
       ASSERT(!leafToken.IsInList());
     }
+    if (count) {
+      Decrement(count);
+    }
   }
   // Delete our child trees.
   map<Item, FPNode*>::iterator itr = children.begin();
@@ -349,42 +352,39 @@ void FPNode::Remove(const std::vector<Item>& path)
   Remove(path.begin(), path.end(), 1);
 }
 
-void FPNode::Remove(std::vector<Item>::const_iterator begin,
-                    std::vector<Item>::const_iterator end,
-                    unsigned count)
+void FPNode::Decrement(uint32_t aCount)
 {
-  Item item = *begin;
-  FPNode* node = GetChild(item);
-  ASSERT(node);
-
-  ASSERT(node->count >= count);
-  node->count -= count;
-  ASSERT(freq->Get(item) >= count);
+  ASSERT(count >= aCount);
+  count -= aCount;
+  ASSERT(freq->Get(item) >= aCount);
   ASSERT(freq->Contains(item));
-  freq->Set(item, freq->Get(item) - count);
+  freq->Set(item, freq->Get(item) - aCount);
+}
 
-  begin++;
-  if (begin != end) {
-    node->Remove(begin, end, count);
-  }
+void FPNode::Remove(std::vector<Item>::const_iterator aPathBegin,
+                    std::vector<Item>::const_iterator aPathEnd,
+                    unsigned aCount)
+{
+  // Traverse path, and decrement frequency. If we lower a node to count 0,
+  // we can stop and delete the remainder of the subtree/path.
+  FPNode* parent = this;
+  for (auto pathItr = aPathBegin; pathItr != aPathEnd; pathItr++) {
+    Item item = *pathItr;
+    auto itr = parent->children.find(item);
+    ASSERT(itr != parent->children.end());
+    FPNode* node = itr->second;
+    ASSERT(node);
 
-  ASSERT(!node->IsLeaf() || node->leafToken.IsInList());
+    node->Decrement(aCount);
 
-  if (node->count == 0) {
-    ASSERT(node->children.size() == 0);
-    children.erase(item);
-    ASSERT(this == node->parent);
-
-    delete node;
-    node = nullptr;
-    if (!IsRoot() && count > 0 && IsLeaf()) {
-      ASSERT(!leafToken.IsInList());
-      leafToken = leaves->Append(this);
+    if (node->count == 0) {
+      // End of the line! No more children can have non-zero path.
+      delete node;
+      parent->children.erase(itr);
+      break;
     }
+    parent = node;
   }
-
-  // Note header table and leaves-list fixed up by FPNode destructor.
-  ASSERT(!IsLeaf() || leafToken.IsInList());
 }
 
 static bool NotInList(const FPNode* node, const FPNode* list) {

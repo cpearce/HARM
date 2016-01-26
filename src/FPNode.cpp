@@ -145,68 +145,6 @@ bool FPNode::ToVector(int stopDepth, vector<int32_t>* v) const {
   return true;
 }
 
-// Read both node and depth to vector
-bool FPNode::ToVector(vector<pair<int, int>>* v) const {
-  pair<int, int> p;
-  p.first = item.IsNull() ? -1 : item.GetId();
-  p.second = depth;
-  v->push_back(p);
-  map<Item, FPNode*>::const_iterator itr = children.begin();
-  while (itr != children.end()) {
-    itr->second->ToVector(v);
-    itr++;
-  }
-  return true;
-}
-
-bool FPNode::ToVector(int stopDepth, vector<pair<int, int>>* v) const {
-  if (depth >= stopDepth) {
-    return false;
-  }
-  pair<int, int> p;
-  p.first = item.IsNull() ? -1 : item.GetId();
-  p.second = depth;
-  v->push_back(p);
-  map<Item, FPNode*>::const_iterator itr = children.begin();
-  while (itr != children.end()) {
-    itr->second->ToVector(stopDepth, v);
-    itr++;
-  }
-  return true;
-}
-
-// Read node id, depth and frequency
-bool FPNode::ToVector(vector<pair<int, pair<int, int>>>* v) const {
-  pair<int, pair<int, int>> p;
-  p.first = item.IsNull() ? -1 : item.GetId();
-  p.second.first  = depth;
-  p.second.second = count;
-  v->push_back(p);
-  map<Item, FPNode*>::const_iterator itr = children.begin();
-  while (itr != children.end()) {
-    itr->second->ToVector(v);
-    itr++;
-  }
-  return true;
-}
-
-bool FPNode::ToVector(int stopDepth, vector<pair<int, pair<int, int>>>* v) const {
-  if (depth >= stopDepth) {
-    return false;
-  }
-  pair<int, pair<int, int>> p;
-  p.first = item.IsNull() ? -1 : item.GetId();
-  p.second.first  = depth;
-  p.second.second = count;
-  v->push_back(p);
-  map<Item, FPNode*>::const_iterator itr = children.begin();
-  while (itr != children.end()) {
-    itr->second->ToVector(stopDepth, v);
-    itr++;
-  }
-  return true;
-}
-
 bool FPNode::ToVector(vector<CmpNode>* v) const {
   CmpNode n;
   n.nId = item.IsNull() ? -1 : item.GetId();

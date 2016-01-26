@@ -158,10 +158,6 @@ public:
   bool ToVector(int stopDepth, std::vector<int32_t>* v) const;
   void ToFile(char* fp);
   void ToFile(char* fp, int  stopDepth);
-  bool ToVector(std::vector<std::pair<int, int>>* v) const;
-  bool ToVector(int stopDepth, std::vector<std::pair<int, int>>* v) const;
-  bool ToVector(std::vector<std::pair<int, std::pair<int, int>>>* v) const;
-  bool ToVector(int stopDepth, std::vector<std::pair<int, std::pair<int, int>>>* v) const;
   //CmpNode
   bool ToVector(std::vector<CmpNode>* v) const;
   bool ToVector(int stopDepth, std::vector<CmpNode>* v) const;

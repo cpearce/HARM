@@ -134,7 +134,6 @@ bool VerifySortedByAppearance(vector<Item>& txn) {
 
 void ConstructConditionalTree(const FPNode* node,
                               FPNode* tree,
-                              DataSet* index,
                               double minCount,
                               unsigned nodePruneDepth = std::numeric_limits<unsigned>::max()) {
   // Create a "projection" of the database, where we only have itemsets
@@ -158,7 +157,6 @@ void ConstructConditionalTree(const FPNode* node,
     #ifdef _DEBUG
     string ps = p ? (string)p->item : "N/A";
     #endif
-    vector<Item> path;
     while (p && !p->IsRoot()) {
       freq.Set(p->item, freq.Get(p->item, 0) + count);
       p = p->parent;
@@ -303,7 +301,7 @@ void FPGrowth(FPNode* tree,
       // Note: we don't pass the ItemFilter to ConstructConditionalTree, as we
       // assume that anything above |item| in the tree also will be signalled to
       // be kept by the filter.
-      ConstructConditionalTree(node, subtree, index, minCount, nodePruneDepth);
+      ConstructConditionalTree(node, subtree, minCount, nodePruneDepth);
       pattern.push_back(item);
       output.Write(pattern);
       if (!subtree->IsLeaf()) {
@@ -730,14 +728,14 @@ void TestConstructConditionalTree_inner(DataSet* index,
 
   {
     FPNode* tree = FPNode::CreateRoot();
-    ConstructConditionalTree(headerList, tree, index, 0);
+    ConstructConditionalTree(headerList, tree, 0);
     string s = tree->ToString();
     ASSERT(s == res_conf0);
     delete tree;
   }
   {
     FPNode* tree = FPNode::CreateRoot();
-    ConstructConditionalTree(headerList, tree, index, min_count);
+    ConstructConditionalTree(headerList, tree, min_count);
     string s = tree->ToString();
     ASSERT(s == res_conf_count);
     delete tree;

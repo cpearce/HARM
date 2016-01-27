@@ -53,7 +53,7 @@ public:
   class Token {
     friend class List;
   public:
-    bool IsInList() {
+    bool IsInList() const {
       return node != 0;
     }
     Token() : node(0) {}

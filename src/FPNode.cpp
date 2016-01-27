@@ -255,6 +255,7 @@ FPNode* FPNode::GetOrCreateChild(Item aItem)
   if (!node) {
     // Item is not in child list, create a new node for it.
     node = new FPNode(aItem, this, headerTable, freq, leaves, 0, iList, depth + 1);
+    ASSERT(node->leafToken.IsInList());
 
     if (!IsRoot() && IsLeaf()) {
       // We're about to add a child node, so we'll stop being a leaf.
@@ -313,12 +314,17 @@ void FPNode::Remove(std::vector<Item>::const_iterator aPathBegin,
     FPNode* node = itr->second;
     ASSERT(node);
 
+    ASSERT(node->count >= aCount);
     node->Decrement(aCount);
 
     if (node->count == 0) {
       // End of the line! No more children can have non-zero path.
-      delete node;
+      ASSERT(node->parent == parent);
       parent->children.erase(itr);
+      if (parent->children.size() == 0 && !parent->IsRoot()) {
+        parent->leafToken = leaves->Append(parent);
+      }
+      delete node;
       break;
     }
     parent = node;
@@ -360,13 +366,16 @@ bool FPNode::DoIsSorted() const {
     unsigned f = freq->Get(item, 0);
     unsigned cf = freq->Get(childItem, 0);
     if (cf == f && item.GetId() > childItem.GetId()) {
+      ASSERT(false);
       return false;
     }
     if (cf > f) {
+      ASSERT(false);
       return false;
     }
     FPNode* childNode = itr->second;
     if (!childNode->DoIsSorted()) {
+      ASSERT(false);
       return false;
     }
     itr++;
@@ -381,6 +390,7 @@ bool FPNode::IsSorted() const {
       Item item = itr->first;
       FPNode* child = itr->second;
       if (!child->DoIsSorted()) {
+        ASSERT(false);
         return false;
       }
       itr++;

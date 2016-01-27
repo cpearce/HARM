@@ -115,7 +115,9 @@ public:
   unsigned NumNodes() const;
 
   bool IsLeaf() const {
-    return children.size() == 0;
+    bool rv = children.empty();
+    ASSERT((rv == leafToken.IsInList()));
+    return rv;
   }
 
   bool HasSinglePath() const {

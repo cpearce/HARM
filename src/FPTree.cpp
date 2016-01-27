@@ -291,7 +291,7 @@ void FPGrowth(FPNode* tree,
       // For cantree mode, we can have items in the header table which don't
       // reach the minsup, so we must avoid creating conditional trees for
       // them here.
-      if (index->Count(item) <  minCount) {
+      if (index->Count(item) < minCount) {
         continue;
       }
 

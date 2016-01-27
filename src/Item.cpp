@@ -48,11 +48,11 @@ Item::Item(const char* aName) {
   Init(name);
 }
 
-Item::Item(string& aName) {
+Item::Item(const string& aName) {
   Init(aName);
 }
 
-void Item::Init(string& aName) {
+void Item::Init(const string& aName) {
   string name = TrimWhiteSpace(aName);
   int itemId = gItemNameToId[name];
   if (itemId == 0) {

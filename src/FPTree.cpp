@@ -34,6 +34,8 @@
 #include <sstream>
 #include "PatternStream.h"
 #include "WindowIndex.h"
+#include "DataSetReader.h"
+#include "DataStreamMining.h"
 #include <queue>
 
 #include "CanTreeFunctor.h"
@@ -427,47 +429,31 @@ void ConstructFPInitialTree(FPNode* fptree,
   assert(options.mode == kFPTree);
   assert(index->IsLoaded());
 
-  ifstream in(index->mFile);
-  if (!in) {
-    cerr << "File not found: '" << options.inputFileName.c_str() << "', failing\n";
-    return;
+  DataSetReader reader;
+  if (!reader.Open(options.inputFileName)) {
+    cerr << "ERROR: Can't open " << options.inputFileName << " failing!" << endl;
+    exit(-1);
   }
 
-  // Foreach transaction (line)
-  // TODO: Use DataSetReader !!
   TreeMetricsLogger logger(fptree, options.logTreeTxn);
-  string line;
-  vector<string> tokens;
-  int lineNumber = 0;
-  while (getline(in, line)) {
-    lineNumber++;
-    // Tokenize the line, into items in the transaction.
-    tokens.clear();
-    Tokenize(line, tokens, ",");
-
-    vector<string>::iterator itr;
-    vector<Item> txn;
-    for (itr = tokens.begin(); itr != tokens.end(); itr++) {
-      string itemName = TrimWhiteSpace(*itr);
-      if (itemName.empty()) {
-        cerr << "Empty or all whitespace transaction on line '" << lineNumber << "' failing!\n";
-        delete fptree;
-        return;
-      }
-
-      Item item(itemName);
-      if (index->Support(item) >= options.minSup) {
-        txn.push_back(item);
-      }
+  TransactionId tid = 0;
+  while (true) {
+    Transaction transaction(tid);
+    if (!reader.GetNext(transaction.items)) {
+      // Failed to read, no more transactions.
+      break;
     }
-
     // Sort in non-increasing order by count.
     CountCmp c(index);
-    sort(txn.begin(), txn.end(), c);
-    ASSERT(VerifySortedByCount(txn, index));
+    sort(transaction.items.begin(), transaction.items.end(), c);
+    ASSERT(VerifySortedByCount(transaction.items, index));
 
-    fptree->Insert(txn);
+    fptree->Insert(transaction.items);
     logger.OnTxn();
+
+    // Increment the transaction id, so that the next transaction
+    // has a monotonically increasing id.
+    tid++;
   }
 }
 

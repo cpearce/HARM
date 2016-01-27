@@ -24,6 +24,7 @@
 #include "List.h"
 #include "PatternStream.h"
 #include "ItemMap.h"
+#include <memory>
 
 using namespace std;
 
@@ -361,8 +362,9 @@ std::vector<Item> ToItemVector(const std::string& _items) {
   std::vector<Item> items;
   std::vector<std::string> tokens;
   Tokenize(_items, tokens, ", ");
-  for (auto i = 0; i < tokens.size(); i++) {
-    items.push_back(Item(tokens[i]));
+  items.reserve(tokens.size());
+  for (const string& token : tokens) {
+    items.push_back(Item(token));
   }
-  return items;
+  return move(items);
 }

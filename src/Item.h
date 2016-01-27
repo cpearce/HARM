@@ -23,7 +23,7 @@
 class Item {
 public:
   Item();
-  Item(std::string& aName);
+  Item(const std::string& aName);
   Item(const char* aName);
   Item(int aItemId);
   ~Item();
@@ -80,7 +80,7 @@ public:
   const char* GetName() const;
 
 private:
-  void Init(std::string& aName);
+  void Init(const std::string& aName);
   int32_t mId;
 };
 

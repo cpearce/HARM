@@ -110,12 +110,14 @@ bool InvertedDataSetIndex::IsLoaded() const {
 }
 
 void InvertedDataSetIndex::GetTidLists(const ItemSet& aItemSet,
-                                       vector<TidList*>& aTidLists) {
+                                       vector<const TidList*>& aTidLists) const {
   set<Item>::const_iterator itr = aItemSet.mItems.begin();
   while (itr != aItemSet.mItems.end()) {
     int itemId = *itr;
-    TidList* tl = &mInvertedIndex[itemId];
-    aTidLists.push_back(tl);
+    map<int, TidList>::const_iterator t = mInvertedIndex.find(itemId);
+    if (t != mInvertedIndex.end()) {
+      aTidLists.push_back(&(t->second));
+    }
     itr++;
   }
 }
@@ -123,13 +125,13 @@ void InvertedDataSetIndex::GetTidLists(const ItemSet& aItemSet,
 // Counts the number of transactions which contain all items in the Itemset.
 // Works by getting the TidLists of all the items, then ANDing them together,
 // and counting the bits set.
-int InvertedDataSetIndex::Count(const ItemSet& aItemSet) {
+int InvertedDataSetIndex::Count(const ItemSet& aItemSet) const {
 
-  vector<TidList*> tidLists;
+  vector<const TidList*> tidLists;
   GetTidLists(aItemSet, tidLists);
 
   int count = 0;
-  TidList* first = tidLists[0];
+  const TidList* first = tidLists[0];
 
   vector<vector<unsigned>*> firstTidlist = first->mChunks;
 
@@ -158,7 +160,7 @@ int InvertedDataSetIndex::Count(const ItemSet& aItemSet) {
   return count;
 }
 
-int InvertedDataSetIndex::Count(const Item& aItem) {
+int InvertedDataSetIndex::Count(const Item& aItem) const {
   return Count(ItemSet(aItem));
 }
 

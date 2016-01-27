@@ -31,8 +31,8 @@ public:
 
   // DataSet overrides.
   bool Load() override; // Not implemented.
-  int Count(const ItemSet& aItemSet) override;
-  int Count(const Item& aItem) override;
+  int Count(const ItemSet& aItemSet) const override;
+  int Count(const Item& aItem) const override;
   unsigned NumTransactions() const override;
   bool IsLoaded() const override; // Not implemented.
 

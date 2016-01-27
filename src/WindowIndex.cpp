@@ -207,7 +207,7 @@ bool WindowIndex::Load() {
   return true;
 }
 
-unsigned WindowIndex::GetNumActiveChunks(Item aItem) {
+unsigned WindowIndex::GetNumActiveChunks(Item aItem) const {
   unsigned index = aItem.GetIndex();
   if (index >= mActiveChunks.size()) {
     return 0;
@@ -219,7 +219,7 @@ bool WindowIndex::IsLoaded() const {
   return mLoaded;
 }
 
-int WindowIndex::Count(const ItemSet& aItemSet) {
+int WindowIndex::Count(const ItemSet& aItemSet) const {
   // Find the item in the set with the smallest number of non-zero chunks
   // in its bitset row.
   Item sparsest;
@@ -251,7 +251,7 @@ int WindowIndex::Count(const ItemSet& aItemSet) {
   if (!chunks) {
     return 0;
   }
-  set<unsigned>& sparsestChunks = mActiveChunks[sparsest.GetIndex()];
+  const set<unsigned>& sparsestChunks = mActiveChunks[sparsest.GetIndex()];
   set<unsigned>::const_iterator chunkItr = sparsestChunks.begin();
   set<unsigned>::const_iterator chunkEnd = sparsestChunks.end();
   while (chunkItr != chunkEnd) {
@@ -276,7 +276,7 @@ int WindowIndex::Count(const ItemSet& aItemSet) {
   return count;
 }
 
-int WindowIndex::Count(const Item& aItem) {
+int WindowIndex::Count(const Item& aItem) const {
   return Count(ItemSet(aItem));
 }
 

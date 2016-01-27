@@ -87,8 +87,8 @@ public:
                        LoadFunctor* aFunctor,
                        unsigned aNumItems = 100);
 
-  virtual int Count(const ItemSet& aItemSet) = 0;
-  virtual int Count(const Item& aItem) = 0;
+  virtual int Count(const ItemSet& aItemSet) const = 0;
+  virtual int Count(const Item& aItem) const = 0;
 
   double Support(const ItemSet& aItemSet) {
     return (double)Count(aItemSet) / (double)NumTransactions();
@@ -120,8 +120,8 @@ public:
 
   bool Load();
 
-  int Count(const ItemSet& aItemSet);
-  int Count(const Item& aItem);
+  int Count(const ItemSet& aItemSet) const;
+  int Count(const Item& aItem) const;
 
   unsigned NumTransactions() const {
     return mNumTransactions;
@@ -148,7 +148,7 @@ protected:
   std::set<Item> mItems;
 
   void GetTidLists(const ItemSet& aItemSet,
-                   std::vector<TidList*>& aTidLists);
+                   std::vector<const TidList*>& aTidLists) const;
 
   void GetTidLists(const ItemSet& aItemSet,
                    std::vector<int>** aShortestTidList,

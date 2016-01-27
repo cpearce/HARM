@@ -40,8 +40,8 @@ public:
 
   bool Load();
 
-  int Count(const ItemSet& aItemSet);
-  int Count(const Item& aItem);
+  int Count(const ItemSet& aItemSet) const;
+  int Count(const Item& aItem) const;
   unsigned NumTransactions() const;
 
   bool IsLoaded() const override;
@@ -54,7 +54,7 @@ private:
   // not. We use this information to optimize the Count() function.
   void MarkChunkUsage(Item aItem, unsigned aChunkIndex, bool aUsed);
 
-  unsigned GetNumActiveChunks(Item aItem);
+  unsigned GetNumActiveChunks(Item aItem) const;
 
   void Set(unsigned aTid, Item aItem, bool aValue);
   bool Get(unsigned aTid, Item aItem) const;

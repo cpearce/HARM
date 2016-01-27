@@ -39,7 +39,7 @@ bool VariableWindowDataSet::Load() {
   return false;
 }
 
-int VariableWindowDataSet::Count(const ItemSet& aItemSet) {
+int VariableWindowDataSet::Count(const ItemSet& aItemSet) const {
   auto& items = aItemSet.mItems;
 
   // Find item with the shortest tidlist.
@@ -82,7 +82,7 @@ int VariableWindowDataSet::Count(const ItemSet& aItemSet) {
   return (int)count;
 }
 
-int VariableWindowDataSet::Count(const Item& aItem) {
+int VariableWindowDataSet::Count(const Item& aItem) const {
   auto item_idx = aItem.GetIndex();
   if (item_idx >= index.size()) {
     return 0;

@@ -267,7 +267,7 @@ public:
     this->CpFunctor->interval = val;
   }
 
-  DDTreeFunctor(FPNode* aCpTree,
+  DDTreeFunctor(FPTree* aCpTree,
                 bool useKernelRegression,
                 int aDataPoints,
                 DataSet* aIndex,
@@ -281,7 +281,7 @@ public:
       windowSize(aBlockSize),
       interval_count(0),
       count_dft(0),
-      extrap_tree(FPNode::CreateRoot()) {
+      extrap_tree(new FPTree()) {
     ExtrapFunctor = new ExtrapTreeFunctor(extrap_tree, interval, aBlockSize,
                                           aIsStreaming, aTxnNums, aIndex,
                                           useKernelRegression, aDataPoints, aOptions);
@@ -321,5 +321,5 @@ public:
   DurationTimer overal_timer;
 
   // The functor owns the sub-tree, enforcing that it's destroyed on shutdown.
-  AutoPtr<FPNode> extrap_tree;
+  AutoPtr<FPTree> extrap_tree;
 };

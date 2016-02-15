@@ -94,7 +94,7 @@ StructuralStreamDriftDetector::StructuralStreamDriftDetector(
     item_freq_merge_threshold(_item_freq_merge_threshold),
     window_cmp(_window_cmp),
     print_blocks(_print_blocks),
-    tree(FPNode::CreateRoot()),
+    tree(new FPTree()),
     data_set(new VariableWindowDataSet()),
     aw_check_interval(1032), //1032
     purgeThreshold(0.5),
@@ -388,7 +388,7 @@ double StructuralStreamDriftDetector::TableInstability(
   // frequency table *must* be in the current one. So we iterate over
   // the current frequency table (rather than the previous block's one)
   // so that we don't miss keys in our iteration.
-  ItemMap<unsigned>::Iterator itr = tree->freq->GetIterator();
+  ItemMap<unsigned>::Iterator itr = tree->FrequencyTable().GetIterator();
   uint32_t count = 0;
   while (itr.HasNext()) {
     count++;
@@ -430,10 +430,10 @@ void StructuralStreamDriftDetector::Add(Transaction& transaction) {
     tree->Sort();
     Log("\nCheck point for transactions [%lu,%lu]\n", start, end);
     if (almost_exact) {
-      check_points.push_back(CheckPoint(start, end, tree->freq,
-                                        ConnectionTable(tree.get(), check_points.size() > 0 ? &check_points[check_points.size() - 1].conn_table : NULL)));
+      check_points.push_back(CheckPoint(start, end, tree->FrequencyTable(),
+                                        ConnectionTable(tree->GetRoot(), check_points.size() > 0 ? &check_points[check_points.size() - 1].conn_table : NULL)));
     } else {
-      check_points.push_back(CheckPoint(start, end, tree->freq));
+      check_points.push_back(CheckPoint(start, end, tree->FrequencyTable()));
     }
 
     if (adaptive_window) {

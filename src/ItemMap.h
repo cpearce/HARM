@@ -31,6 +31,10 @@ public:
 
   ItemMap() { }
 
+  bool IsEmpty() const {
+    return v.empty() && valid.empty();
+  }
+
   bool Contains(Item item) const {
     if (item.IsNull()) {
       return false;

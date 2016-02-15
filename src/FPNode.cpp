@@ -27,11 +27,11 @@ FPNode::~FPNode() {
       // This node is the first entry in header table.
       if (next) {
         // We have a next, set the first entry to that.
-        headerTable->Set(item, next);
+        HeaderTable().Set(item, next);
         next->prev = nullptr;
       } else {
         // No next, just erase the entry for this item.
-        headerTable->Erase(item);
+        HeaderTable().Erase(item);
       }
     } else {
       if (next) {
@@ -41,7 +41,7 @@ FPNode::~FPNode() {
     }
     if (IsLeaf()) {
       ASSERT(leafToken.IsInList());
-      leaves->Erase(leafToken);
+      Leaves().Erase(leafToken);
       ASSERT(!leafToken.IsInList());
     }
     if (count) {
@@ -55,17 +55,6 @@ FPNode::~FPNode() {
     itr++;
   }
   children.clear();
-  if (IsRoot()) {
-    // The root owns the header table and other shared data.
-    // We must delete them if we're the root.
-    delete headerTable;
-    delete leaves;
-    delete freq;
-    delete iList;
-  }
-  headerTable = nullptr;
-  freq = nullptr;
-  leaves = nullptr;
 }
 
 string FPNode::ToString() const {
@@ -213,13 +202,13 @@ void FPNode::DumpToGraphViz(FILE* f, string parent) const {
 }
 
 bool VerifySortedByFreqAppearance(const vector<Item>& v,
-                                  const ItemMap<unsigned>* freq) {
+                                  const ItemMap<unsigned>& freq) {
   for (unsigned i = 1; i < v.size(); i++) {
     Item prev = v[i - 1];
     Item curr = v[i];
 
-    unsigned curCount = freq->Get(curr, 0);
-    unsigned prevCount = freq->Get(prev, 0);
+    unsigned curCount = freq.Get(curr, 0);
+    unsigned prevCount = freq.Get(prev, 0);
     if (prevCount < curCount) {
       return false;
     }
@@ -232,10 +221,10 @@ bool VerifySortedByFreqAppearance(const vector<Item>& v,
 }
 
 void FPNode::SortTransaction(vector<Item>& transaction) {
-  if (iList) {
-    ItemMapCmp<unsigned> cmp(*iList);
+  if (!FrequencyTableAtLastSort().IsEmpty()) {
+    ItemMapCmp<unsigned> cmp(FrequencyTableAtLastSort());
     sort(transaction.begin(), transaction.end(), cmp);
-    ASSERT(VerifySortedByFreqAppearance(transaction, iList));
+    ASSERT(VerifySortedByFreqAppearance(transaction, FrequencyTableAtLastSort()));
   } else {
     AppearanceCmp cmp;
     sort(transaction.begin(), transaction.end(), cmp);
@@ -254,14 +243,14 @@ FPNode* FPNode::GetOrCreateChild(Item aItem)
   FPNode* node = GetChild(aItem);
   if (!node) {
     // Item is not in child list, create a new node for it.
-    node = new FPNode(aItem, this, headerTable, freq, leaves, 0, iList, depth + 1);
+    node = new FPNode(mTree, aItem, this, 0, depth + 1);
     ASSERT(node->leafToken.IsInList());
 
     if (!IsRoot() && IsLeaf()) {
       // We're about to add a child node, so we'll stop being a leaf.
       // Remove us from the leaves list.
       ASSERT(leafToken.IsInList());
-      leaves->Erase(leafToken);
+      Leaves().Erase(leafToken);
       ASSERT(!leafToken.IsInList());
     }
     children[aItem] = node;
@@ -281,7 +270,7 @@ void FPNode::Insert(std::vector<Item>::const_iterator aBegin,
     Item item = *aBegin;
     FPNode* node = parent->GetOrCreateChild(item);
     node->count += aCount;
-    freq->Set(item, freq->Get(item, 0) + aCount);
+    FrequencyTable().Set(item, FrequencyTable().Get(item, 0) + aCount);
     parent = node;
   }
 }
@@ -295,9 +284,9 @@ void FPNode::Decrement(uint32_t aCount)
 {
   ASSERT(count >= aCount);
   count -= aCount;
-  ASSERT(freq->Get(item) >= aCount);
-  ASSERT(freq->Contains(item));
-  freq->Set(item, freq->Get(item) - aCount);
+  ASSERT(FrequencyTable().Get(item) >= aCount);
+  ASSERT(FrequencyTable().Contains(item));
+  FrequencyTable().Set(item, FrequencyTable().Get(item) - aCount);
 }
 
 void FPNode::Remove(std::vector<Item>::const_iterator aPathBegin,
@@ -322,7 +311,7 @@ void FPNode::Remove(std::vector<Item>::const_iterator aPathBegin,
       ASSERT(node->parent == parent);
       parent->children.erase(itr);
       if (parent->children.size() == 0 && !parent->IsRoot()) {
-        parent->leafToken = leaves->Append(parent);
+        parent->leafToken = Leaves().Append(parent);
       }
       delete node;
       break;
@@ -345,8 +334,8 @@ static bool NotInList(const FPNode* node, const FPNode* list) {
 }
 
 void FPNode::AddToHeaderTable(FPNode* node) {
-  if (headerTable->Contains(node->item)) {
-    FPNode* list = headerTable->Get(node->item);
+  if (HeaderTable().Contains(node->item)) {
+    FPNode* list = HeaderTable().Get(node->item);
     node->next = list;
     ASSERT(!list->prev);
     list->prev = node;
@@ -354,7 +343,7 @@ void FPNode::AddToHeaderTable(FPNode* node) {
     ASSERT(!node->prev);
     ASSERT(!node->next);
   }
-  headerTable->Set(node->item, node);
+  HeaderTable().Set(node->item, node);
 }
 
 
@@ -363,8 +352,8 @@ bool FPNode::DoIsSorted() const {
   map<Item, FPNode*>::const_iterator itr = children.begin();
   while (itr != children.end()) {
     Item childItem = itr->first;
-    unsigned f = freq->Get(item, 0);
-    unsigned cf = freq->Get(childItem, 0);
+    unsigned f = FrequencyTable().Get(item, 0);
+    unsigned cf = FrequencyTable().Get(childItem, 0);
     if (cf == f && item.GetId() > childItem.GetId()) {
       ASSERT(false);
       return false;
@@ -403,7 +392,7 @@ bool FPNode::IsSorted() const {
 
 
 void FPNode::DumpFreq() const {
-  ItemMap<unsigned>::Iterator itr = freq->GetIterator();
+  ItemMap<unsigned>::Iterator itr = FrequencyTable().GetIterator();
   while (itr.HasNext()) {
     Item item = itr.GetKey();
     unsigned count = itr.GetValue();
@@ -412,10 +401,10 @@ void FPNode::DumpFreq() const {
   }
 }
 
-TreePathIterator::TreePathIterator(FPNode* _root)
-  : root(_root),
-    itr(root->leaves->Begin()) {
-  ASSERT(root->IsRoot());
+TreePathIterator::TreePathIterator(FPTree* aTree)
+  : root(aTree->GetRoot())
+  , itr(aTree->Leaves().Begin())
+{
 }
 
 bool TreePathIterator::GetNext(std::vector<Item>& path, unsigned& count) {
@@ -447,12 +436,8 @@ void FPNode::Sort() {
   // Only call on the root!
   ASSERT(IsRoot());
 
-  if (iList) {
-    delete iList;
-  }
-  iList = new ItemMap<unsigned>(*freq);
-
-  ItemMapCmp<unsigned> cmp(*iList);
+  FrequencyTableAtLastSort() = FrequencyTable();
+  ItemMapCmp<unsigned> cmp(FrequencyTable());
   Sort(&cmp);
 }
 
@@ -473,7 +458,7 @@ void FPNode::Sort(ItemComparator* cmp) {
   };
   ConcreteItemComparator comparator(cmp);
 
-  TreePathIterator itr(this);
+  TreePathIterator itr(mTree);
   vector<Item> path;
   unsigned count;
   while (itr.GetNext(path, count)) {
@@ -513,4 +498,29 @@ void FPNode::Replace(const vector<Item>& from,
 
   node->Remove(from.begin() + index, from.end(), count);
   node->Insert(to.begin() + index, to.end(), count);
+}
+
+
+ItemMap<FPNode*>&
+FPNode::HeaderTable() const {
+  ASSERT(mTree);
+  return mTree->HeaderTable();
+}
+
+ItemMap<unsigned>&
+FPNode::FrequencyTable() const {
+  ASSERT(mTree);
+  return mTree->FrequencyTable();
+}
+
+ItemMap<unsigned>&
+FPNode::FrequencyTableAtLastSort() const {
+  ASSERT(mTree);
+  return mTree->FrequencyTableAtLastSort();
+}
+
+List<FPNode*>&
+FPNode::Leaves() const {
+  ASSERT(mTree);
+  return mTree->Leaves();
 }

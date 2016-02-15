@@ -19,7 +19,7 @@
 #include <vector>
 
 class Options;
-class FPNode;
+class FPTree;
 class DataSet;
 
 void MineDataStream(const Options& options);
@@ -53,7 +53,7 @@ public:
 class MiningContext {
 public:
   MiningContext(const Options& options);
-  void Mine(FPNode* aNode, DataSet* dataset);
+  void Mine(FPTree* aTree, DataSet* dataset);
 private:
   const Options& options;
   uint32_t mining_run;

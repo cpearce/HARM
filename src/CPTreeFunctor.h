@@ -21,7 +21,7 @@
 
 class CpTreeFunctor : public FPTreeFunctor {
 public:
-  CpTreeFunctor(FPNode* aTree,
+  CpTreeFunctor(FPTree* aTree,
                 unsigned _interval,
                 int aBlockSize,
                 bool aIsStreaming,

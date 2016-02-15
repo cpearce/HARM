@@ -30,7 +30,7 @@ MiningContext::MiningContext(const Options& _options)
     mining_run(0) {
 }
 
-void MiningContext::Mine(FPNode* root, DataSet* dataset) {
+void MiningContext::Mine(FPTree* root, DataSet* dataset) {
   Log("Mining rules\n");
   mining_run++;
   string itemSetsOuputFilename =

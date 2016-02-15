@@ -22,7 +22,7 @@
 
 class CanTreeFunctor : public FPTreeFunctor {
 public:
-  CanTreeFunctor(FPNode* aTree,
+  CanTreeFunctor(FPTree* aTree,
                  const std::vector<unsigned>& aTxnNums,
                  int aBlockSize,
                  bool aIsStreaming,

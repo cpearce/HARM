@@ -18,6 +18,7 @@
 
 #include "InvertedDataSetIndex.h" // For LoadFunctor
 class FPNode;
+class FPTree;
 
 // Filter that specifies whether an item should be used in a mining phase.
 // This is passed into FPGrowth for some FPTree variants.
@@ -32,12 +33,12 @@ public:
 // _txnNums.
 class TreeMetricsLogger {
 public:
-  TreeMetricsLogger(FPNode* _tree, const std::vector<unsigned>& _txnNums);
+  TreeMetricsLogger(FPTree* _tree, const std::vector<unsigned>& _txnNums);
 
   void OnTxn();
 
 private:
-  FPNode* tree;
+  FPTree* tree;
   const std::vector<unsigned>& txnNums;
   unsigned count;
   unsigned index;
@@ -52,7 +53,7 @@ private:
 // end of their OnLoad() override.
 class FPTreeFunctor : public LoadFunctor {
 public:
-  FPTreeFunctor(FPNode* aTree,
+  FPTreeFunctor(FPTree* aTree,
                 const std::vector<unsigned>& aTxnNums,
                 int aBlockSize,
                 bool aIsStreaming,
@@ -71,7 +72,7 @@ public:
     return nullptr;
   }
 
-  FPNode* mTree;
+  FPTree* mTree;
   TreeMetricsLogger mLogger;
   bool mIsStreaming;
   Options& mOptions;
@@ -81,7 +82,7 @@ public:
   DataSet* mIndex;
 };
 
-void MineFPTree(FPNode* fptree,
+void MineFPTree(FPTree* fptree,
                 double minSup,
                 const std::string& itemSetsOuputFilename,
                 const std::string& rulesOuputFilename,

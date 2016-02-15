@@ -29,8 +29,8 @@ using dlib::krls;
 
 class Interpolation {
 public:
-  Interpolation(FPNode* root)
-    : fptree(root) {
+  Interpolation(FPTree* tree)
+    : fptree(tree) {
   }
 
   // Called after a txn has been inserted.
@@ -58,7 +58,7 @@ public:
   void UpdatePrevCount() { // Used by Linear Interpolation to update counts
     for (unsigned i = 0; i < ranking.size(); i++) {
       Item item = ranking[i];
-      unsigned count = fptree->freq->Get(item, 0);
+      unsigned count = fptree->FrequencyTable().Get(item, 0);
       unsigned prevCount = storedPrevCount.Get(item);
       storedInitCount.Set(item, prevCount);
       storedPrevCount.Set(item, count);
@@ -69,7 +69,7 @@ public:
     ItemMap<unsigned> ptCount;
     for (unsigned i = 0; i < ranking.size(); i++) {
       Item item = ranking[i];
-      unsigned count = fptree->freq->Get(item, 0);
+      unsigned count = fptree->FrequencyTable().Get(item, 0);
       ptCount.Set(item, count);
     }
     kernelPointIDs.push_back(tid);
@@ -90,7 +90,7 @@ public:
         Item item = ranking[i];
         unsigned initCount = storedInitCount.Get(item);
         unsigned prevCount = storedPrevCount.Get(item);
-        unsigned count = fptree->freq->Get(item, 0);
+        unsigned count = fptree->FrequencyTable().Get(item, 0);
         double interpolation = 0.0;
         double firsthalve = (double)(prevCount - initCount);
         double sechalve = (double)(count - prevCount);
@@ -168,13 +168,13 @@ private:
   ItemMap<ItemMap<unsigned>> storedKernelCounts;
   std::vector<unsigned> kernelPointIDs;
 
-  FPNode* fptree;
+  FPTree* fptree;
 };
 
 
 class ExtrapTreeFunctor : public FPTreeFunctor {
 public:
-  ExtrapTreeFunctor(FPNode* aTree,
+  ExtrapTreeFunctor(FPTree* aTree,
                     unsigned aThreshold,
                     int aBlockSize,
                     bool aIsStreaming,

@@ -64,22 +64,15 @@ struct ItemMapCmp : public ItemComparator {
   const ItemMap<FreqType>& freq;
 };
 
+class FPTree;
+
 class FPNode {
+  friend class FPTree;
 public:
 
   Item item;
   unsigned count;
   std::map<Item, FPNode*> children;
-  ItemMap<FPNode*>* headerTable;
-  List<FPNode*>* leaves;
-
-  // Current frequency table. This is updated as we add items to the tree.
-  ItemMap<unsigned>* freq;
-
-  // Frequency table at the last sort. This is only updated when we sort.
-  // We keep this separate from the current frequency table in |freq| so that
-  // we sort consistently during insertion.
-  ItemMap<unsigned>* iList;
 
   // Next item in the header table list of nodes.
   FPNode* next;
@@ -99,11 +92,6 @@ public:
 
   void DumpFreq() const;
 
-  static FPNode* CreateRoot() {
-    FPNode* n = new FPNode();
-    return n;
-  }
-
   ~FPNode();
 
   bool IsRoot() const {
@@ -116,21 +104,8 @@ public:
 
   bool IsLeaf() const {
     bool rv = children.empty();
-    ASSERT((rv == leafToken.IsInList()));
+    ASSERT(IsRoot() || (rv == leafToken.IsInList()));
     return rv;
-  }
-
-  bool HasSinglePath() const {
-    if ((!parent || (parent->IsRoot() && parent->children.size() == 1)) && children.size() == 0) {
-      return false;
-    }
-    if (children.size() == 0) {
-      return true;
-    } else if (children.size() == 1) {
-      return FirstChild()->HasSinglePath();
-    } else {
-      return false;
-    }
   }
 
   bool IsSorted() const;
@@ -168,7 +143,27 @@ public:
 
   void Remove(const std::vector<Item>& path);
 
+  ItemMap<FPNode*>& HeaderTable() const;
+  ItemMap<unsigned>& FrequencyTable() const;
+  ItemMap<unsigned>& FrequencyTableAtLastSort() const;
+  List<FPNode*>& Leaves() const;
+
 private:
+
+  bool HasSinglePath() const {
+    if ((!parent || (parent->IsRoot() && parent->children.size() == 1)) && children.size() == 0) {
+      return false;
+    }
+    if (children.size() == 0) {
+      return true;
+    }
+    else if (children.size() == 1) {
+      return FirstChild()->HasSinglePath();
+    }
+    else {
+      return false;
+    }
+  }
 
   void Decrement(uint32_t aCount);
 
@@ -188,43 +183,32 @@ private:
   bool DoIsSorted() const;
 
   // Creates a root node.
-  FPNode()
-    : count(0),
-      iList(0),
-      next(0),
-      prev(0),
-      parent(0),
-      depth(0) {
-    headerTable = new ItemMap<FPNode*>();
-    leaves = new List<FPNode*>();
-    freq = new ItemMap<unsigned>();
-    if (!headerTable || !freq) {
-      std::cout << "Out of memory" << std::endl;
-      exit(-1);
-    }
+  explicit FPNode(FPTree* aTree)
+    : count(0)
+    , next(nullptr)
+    , prev(nullptr)
+    , parent(nullptr)
+    , depth(0)
+    , mTree(aTree)
+  {
   }
 
   // Creates a data node.
-  FPNode(Item i,
-         FPNode* p,
-         ItemMap<FPNode*>* l,
-         ItemMap<unsigned>* f,
-         List<FPNode*>* lvs,
-         unsigned c,
-         ItemMap<unsigned>* ilist,
-         unsigned _depth)
-    : item(i),
-      count(c),
-      headerTable(l),
-      leaves(lvs),
-      freq(f),
-      iList(ilist),
-      next(0),
-      prev(0),
-      parent(p),
-      depth(_depth) {
+  explicit FPNode(FPTree* aTree,
+                  Item aItem,
+                  FPNode* aParent,
+                  unsigned aCount,
+                  unsigned aDepth)
+    : item(aItem)
+    , count(aCount)
+    , next(nullptr)
+    , prev(nullptr)
+    , parent(aParent)
+    , depth(aDepth)
+    , mTree(aTree)
+  {
     // All nodes initially have no children, so are leaves to start with.
-    leafToken = leaves->Prepend(this);
+    leafToken = Leaves().Prepend(this);
   }
 
   // Inserts the items in txn into the tree. Increments the support count by
@@ -235,11 +219,119 @@ private:
               unsigned count);
 
   void AddToHeaderTable(FPNode* n);
+
+  FPTree* mTree;
+};
+
+class FPTree {
+public:
+
+  FPTree()
+    : mRoot(new FPNode(this))
+  {
+  }
+
+  ~FPTree()
+  {
+    // Note: We must explicitly delete this here so that the destruction
+    // of the tree is performed before the other fields on the tree are
+    // destroyed, as the FPNode's destructors use data stored on the FPTree.
+    mRoot = nullptr;
+  }
+
+  FPNode* GetRoot() const { return mRoot; }
+  ItemMap<FPNode*>& HeaderTable() { return mHeaderTable; }
+  ItemMap<unsigned>& FrequencyTable() { return mFreq; }
+  ItemMap<unsigned>& FrequencyTableAtLastSort() { return mFreqAtLastSort; }
+  List<FPNode*>& Leaves() { return mLeaves; }
+
+  bool HasSinglePath() const {
+    return mRoot->HasSinglePath();
+  }
+
+  bool IsEmpty() const {
+    return mRoot->IsLeaf();
+  }
+
+  void Insert(const std::vector<Item>& txn, unsigned count) {
+    mRoot->Insert(txn.begin(), txn.end(), count);
+  }
+  void Insert(const std::vector<Item>& txn) {
+    mRoot->Insert(txn);
+  }
+
+  void Remove(const std::vector<Item>& path) {
+    mRoot->Remove(path);
+  }
+
+  std::string ToString() const {
+    return mRoot->ToString();
+  }
+
+  // Sorts a transaction based on the existing frequency table (iList) if
+  // we have one, otherwise it's sorted in order of item appearance.
+  void SortTransaction(std::vector<Item>& txn) {
+    mRoot->SortTransaction(txn);
+  }
+
+  void Sort() {
+    mRoot->Sort();
+  }
+
+  void Sort(ItemComparator* cmp) {
+    mRoot->Sort(cmp);
+  }
+
+  unsigned NumNodes() const {
+    return mRoot->NumNodes();
+  }
+
+  bool ToVector(std::vector<int32_t>* v) const {
+    return mRoot->ToVector(v);
+  }
+
+  bool ToVector(int stopDepth, std::vector<int32_t>* v) const {
+    return mRoot->ToVector(stopDepth, v);
+  }
+
+  //CmpNode
+  bool ToVector(std::vector<CmpNode>* v) const {
+    return mRoot->ToVector(v);
+  }
+
+  bool ToVector(int stopDepth, std::vector<CmpNode>* v) const {
+    return mRoot->ToVector(stopDepth, v);
+  }
+
+  void DumpToGraphViz(const char* filename) const {
+    mRoot->DumpToGraphViz(filename);
+  }
+
+  void DumpFreq() const {
+    mRoot->DumpFreq();
+  }
+
+  bool IsSorted() const {
+    return mRoot->IsSorted();
+  }
+
+private:
+  AutoPtr<FPNode> mRoot;
+  ItemMap<FPNode*> mHeaderTable;
+  List<FPNode*> mLeaves;
+
+  // Current frequency table. This is updated as we add items to the tree.
+  ItemMap<unsigned> mFreq;
+
+  // Frequency table at the last sort. This is only updated when we sort.
+  // We keep this separate from the current frequency table in |freq| so that
+  // we sort consistently during insertion.
+  ItemMap<unsigned> mFreqAtLastSort; // iList;
 };
 
 class TreePathIterator {
 public:
-  TreePathIterator(FPNode* root);
+  TreePathIterator(FPTree* tree);
 
   // Stores the next path into |path|, and the |count| of the corresponding
   // leaf into |count|. The count is the number of times the itemset appears

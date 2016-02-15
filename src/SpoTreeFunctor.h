@@ -21,9 +21,9 @@
 
 class SpoRanks {
 public:
-  SpoRanks(FPNode* root)
+  SpoRanks(FPTree* tree)
     : diffSum(0)
-    , fptree(root)
+    , fptree(tree)
   {
   }
 
@@ -43,8 +43,8 @@ public:
       unsigned r = lookup.Get(item);
       while (r > 0) {
         Item prev = ranking[r - 1];
-        unsigned count = fptree->freq->Get(item, 0);
-        unsigned prevCount = fptree->freq->Get(prev, 0);
+        unsigned count = fptree->FrequencyTable().Get(item, 0);
+        unsigned prevCount = fptree->FrequencyTable().Get(prev, 0);
         if (prevCount > count) {
           break;
         }
@@ -116,13 +116,13 @@ private:
   // had at the last sort.
   ItemMap<unsigned> storedRank;
 
-  FPNode* fptree;
+  FPTree* fptree;
 };
 
 class SpoTreeFunctor : public FPTreeFunctor {
 public:
 
-  SpoTreeFunctor(FPNode* aTree,
+  SpoTreeFunctor(FPTree* aTree,
                  double _threshold,
                  int aBlockSize,
                  bool aIsStreaming,
@@ -156,8 +156,8 @@ public:
   void OnUnload(const std::vector<Item>& txn) {
     ASSERT(mIsStreaming); // Should only be called in streaming mode.
     std::vector<Item> t(txn);
-    if (mTree->iList) {
-      sort(t.begin(), t.end(),  ItemMapCmp<unsigned>(*mTree->iList));
+    if (!mTree->FrequencyTableAtLastSort().IsEmpty()) {
+      sort(t.begin(), t.end(), ItemMapCmp<unsigned>(mTree->FrequencyTableAtLastSort()));
     } else {
       sort(t.begin(), t.end(), AppearanceCmp());
     }

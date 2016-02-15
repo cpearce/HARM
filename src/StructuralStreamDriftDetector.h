@@ -115,7 +115,7 @@ private:
   const bool use_distribution_drift;
   const double dbdd_delta;
 
-  std::unique_ptr<FPNode> tree;
+  std::unique_ptr<FPTree> tree;
 
   std::unique_ptr<VariableWindowDataSet> data_set;
 
@@ -125,21 +125,21 @@ private:
     // TOOD: Move ctor && etc..
     CheckPoint(TransactionId _start_tid,
                TransactionId _end_tid,
-               ItemMap<unsigned>* _frequency_table
+               const ItemMap<unsigned>& _frequency_table
               )
       : start_tid(_start_tid),
         end_tid(_end_tid),
-        frequency_table(*_frequency_table) {
+        frequency_table(_frequency_table) {
     }
 
     CheckPoint(TransactionId _start_tid,
                TransactionId _end_tid,
-               ItemMap<unsigned>* _frequency_table,
+               const ItemMap<unsigned>& _frequency_table,
                ConnectionTable _conn_table
               )
       : start_tid(_start_tid),
         end_tid(_end_tid),
-        frequency_table(*_frequency_table),
+        frequency_table(_frequency_table),
         conn_table(_conn_table) {
     }
 

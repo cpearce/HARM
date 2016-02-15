@@ -25,7 +25,7 @@
 class DiscTreeFunctor : public FPTreeFunctor,
   public ItemFilter {
 public:
-  DiscTreeFunctor(FPNode* aTree,
+  DiscTreeFunctor(FPTree* aTree,
                   unsigned aSortThreshold,
                   int aBlockSize,
                   bool aIsStreaming,

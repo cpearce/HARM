@@ -130,6 +130,10 @@ int InvertedDataSetIndex::Count(const ItemSet& aItemSet) const {
   vector<const TidList*> tidLists;
   GetTidLists(aItemSet, tidLists);
 
+  if (tidLists.empty()) {
+    return 0;
+  }
+
   int count = 0;
   const TidList* first = tidLists[0];
 

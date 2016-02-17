@@ -337,23 +337,24 @@ void List_Test() {
 }
 
 void ItemMap_Test() {
+  std::map<int, unsigned> expected;
   ItemMap<unsigned> m;
   for (unsigned i = 1; i < 1000; ++i) {
     Item item(i);
     m.Set(item, i);
+    expected[item.GetId()] = i;
   }
 
   ItemMap<unsigned>::Iterator itr = m.GetIterator();
-  unsigned expected = 1;
+  int count = 0;
   while (itr.HasNext()) {
     Item item = itr.GetKey();
     unsigned value = itr.GetValue();
-    ASSERT(item.GetId() == expected);
-    ASSERT(value == expected);
+    ASSERT(value == expected[item.GetId()]);
     itr.Next();
-    expected++;
+    count++;
   }
-  ASSERT(expected == 1000);
+  ASSERT(count == expected.size());
 }
 
 // Converts a string in "a,b,c" form to a vector of items [a,b,c].

@@ -487,7 +487,7 @@ void StructuralStreamDriftDetector::PurgeBlocksUpTo(int block_index) {
       for (uint32_t item_idx = 0; item_idx < transaction.items.size(); item_idx++) {
         Item item = transaction.items[item_idx];
         ASSERT(frequency_table.Get(item) >= 1);
-        frequency_table.Set(item, frequency_table.Get(item) - 1);
+        frequency_table.Decrement(item, 1);
       }
     }
   }

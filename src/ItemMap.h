@@ -75,6 +75,14 @@ public:
     return v.at(index);
   }
 
+  void Increment(Item key, T value) {
+    Set(key, Get(key, 0) + value);
+  }
+
+  void Decrement(Item key, T value) {
+    Set(key, Get(key) - value);
+  }
+
   const T& GetRef(Item& key) const {
     return v.at(key.GetIndex());
   }

@@ -270,7 +270,7 @@ void FPNode::Insert(std::vector<Item>::const_iterator aBegin,
     Item item = *aBegin;
     FPNode* node = parent->GetOrCreateChild(item);
     node->count += aCount;
-    FrequencyTable().Set(item, FrequencyTable().Get(item, 0) + aCount);
+    FrequencyTable().Increment(item, aCount);
     parent = node;
   }
 }
@@ -286,7 +286,7 @@ void FPNode::Decrement(uint32_t aCount)
   count -= aCount;
   ASSERT(FrequencyTable().Get(item) >= aCount);
   ASSERT(FrequencyTable().Contains(item));
-  FrequencyTable().Set(item, FrequencyTable().Get(item) - aCount);
+  FrequencyTable().Decrement(item, aCount); 
 }
 
 void FPNode::Remove(std::vector<Item>::const_iterator aPathBegin,

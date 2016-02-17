@@ -62,7 +62,6 @@ int main(int argc, const char* argv[]) {
   WindowIndex::Test();
   Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
   Apriori_Test();
-  Thread::Test();
   MinAbsSupFilter::Test();
   Item::ResetBaseId();
   Test_FPTree();

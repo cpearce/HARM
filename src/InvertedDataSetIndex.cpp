@@ -143,7 +143,7 @@ int InvertedDataSetIndex::Count(const ItemSet& aItemSet) const {
       continue;
     }
 
-    // Logical AND it with the correspondig bitset from the TidList
+    // Logical AND it with the corresponding bitset from the TidList
     // for all other itemsets.
     for (unsigned i = 0; i < chunks->size(); ++i) {
       unsigned chunk = chunks->at(i);

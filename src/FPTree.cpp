@@ -613,6 +613,7 @@ i1,i2,i3
 void TestInitialConstruction() {
   InvertedDataSetIndex index("datasets/test/fp-test.csv");
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
+  options.inputFileName = "datasets/test/fp-test.csv";
   FPTree* fptree = CreateFPTree(&index, options);
   if (!fptree) {
     return;
@@ -661,6 +662,7 @@ void TestInitialConstruction() {
 void TestHasSinglePath() {
   InvertedDataSetIndex index("datasets/test/single-path.csv");
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
+  options.inputFileName = "datasets/test/single-path.csv";
   FPTree* fptree = CreateFPTree(&index, options);
   if (!fptree) {
     return;
@@ -746,6 +748,7 @@ void TestConstructConditionalTree() {
   {
     InvertedDataSetIndex index("datasets/test/fp-test.csv");
     Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
+    options.inputFileName = "datasets/test/fp-test.csv";
     FPTree* fptree = CreateFPTree(&index, options);
     if (!fptree) {
       return;
@@ -766,6 +769,7 @@ void TestConstructConditionalTree() {
   {
     InvertedDataSetIndex index("datasets/test/fp-test5.csv");
     Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
+    options.inputFileName = "datasets/test/fp-test5.csv";
     FPTree* fptree = CreateFPTree(&index, options);
     if (!fptree) {
       return;
@@ -780,6 +784,7 @@ void TestConstructConditionalTree() {
 static void TestFPGrowth() {
   InvertedDataSetIndex index("datasets/test/fp-test.csv");
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
+  options.inputFileName = "datasets/test/fp-test.csv";
   FPTree* fptree = CreateFPTree(&index, options);
   if (!fptree) {
     return;
@@ -812,6 +817,7 @@ static void TestFPGrowth2() {
   // -i datasets/test/fp-test3.csv -m fptree -o output/fptree-fp-test3 -minsup 0.2
   InvertedDataSetIndex index("datasets/test/fp-test3.csv");
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
+  options.inputFileName = "datasets/test/fp-test3.csv";
   FPTree* fptree = CreateFPTree(&index, options);
   if (!fptree) {
     return;
@@ -879,6 +885,7 @@ static void TestTreeSorted() {
   {
     InvertedDataSetIndex index("datasets/test/census2.csv");
     Options options(0, kFPTree, UINT_MAX, 0, 0, 0, 0, 0, 0);
+    options.inputFileName = "datasets/test/census2.csv";
     FPTree* cantree = CreateFPTree(&index, options);
     if (!cantree) {
       return;

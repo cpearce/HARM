@@ -75,13 +75,8 @@ public:
     return v.at(index);
   }
 
-  void* GetRef(Item& key) const {
-    if (!Contains(key)) {
-      return NULL;
-    }
-    unsigned index = key.GetIndex();
-    ASSERT(index < v.size());
-    return (void*) & (v.at(index));
+  const T& GetRef(Item& key) const {
+    return v.at(key.GetIndex());
   }
 
   void Erase(Item key) {

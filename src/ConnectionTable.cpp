@@ -187,9 +187,9 @@ bool ConnectionTable::isConnected(Item& a, Item& b, const ItemMap<unsigned>* fre
   item = a;
   do {
     visited += item;
-    ChildList* children = (ChildList*)cl.GetRef(item);
-    if (children) {
-      ChildList::Iterator childrenIterator = children->GetIterator();
+    if (cl.Contains(item)) {
+      const ChildList& children = cl.GetRef(item);
+      ChildList::Iterator childrenIterator = children.GetIterator();
       while (childrenIterator.HasNext()) {
         Item child = childrenIterator.GetKey();
         if (child == b) {

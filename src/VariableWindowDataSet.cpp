@@ -45,7 +45,7 @@ int VariableWindowDataSet::Count(const ItemSet& aItemSet) const {
   // Find item with the shortest tidlist.
   auto itr = items.begin();
   Item smallest_item = *itr;
-  // Note: We do not increment iterator, so we do the existance in the
+  // Note: We do not increment iterator, so we do the existence in the
   // loop check below.
   for (; itr != items.end(); itr++) {
     Item item = *itr;

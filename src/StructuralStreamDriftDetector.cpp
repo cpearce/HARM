@@ -358,7 +358,7 @@ double StructuralStreamDriftDetector::TreeAutomaticThreshold(
 
   rho = z/sqrt(double(n_value - 1));
 
- 
+
   //double rho = (6.0 * totalRankDifference / (n_value * (n_value * n_value - 1)));
   // e_cut = ((1-rho)(n-1)) / (6.|P|)		// |P| = path_count
   double e_cut = (1.0 - rho) * (n_value * n_value - 1) / (6 * n_value * path_count);

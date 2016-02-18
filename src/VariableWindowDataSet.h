@@ -54,8 +54,9 @@ private:
   // Number of items that we reserve space for in the inverted index.
   static const uint32_t index_reserved_items = 1024;
   // Number of transactions that we reserve space for, for each item's tid list
-  // in the index.
-  static const uint32_t index_reserved_chunks = 100000 / chunk_size;
+  // in the index, and the number of transactions we add to the index every time
+  // we grow.
+  static const uint32_t index_reserved_chunks = 10000;
 
   typedef std::vector<std::bitset<chunk_size>> TidList;
 

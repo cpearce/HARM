@@ -25,9 +25,9 @@ VariableWindowDataSet::VariableWindowDataSet()
     first_chunk_start_tid(0),
     first_chunk_start_offset(0) {
   index.reserve(index_reserved_items);
-  for_each(index.begin(), index.end(), [&](vector<bitset<chunk_size>>& vec) {
+  for (vector<bitset<chunk_size>>& vec : index) {
     vec.reserve(index_reserved_chunks);
-  });
+  }
 }
 
 VariableWindowDataSet::~VariableWindowDataSet() {
@@ -107,12 +107,12 @@ bool VariableWindowDataSet::IsLoaded() const {
 }
 
 template<class T>
-void EnsureCapacity(vector<T>& vec, uint32_t size) {
+void EnsureCapacity(vector<T>& vec, uint32_t size, uint32_t grow) {
   if (vec.size() < size + 1) {
     if (vec.capacity() < size + 1) {
-      // Increase the capacity by 20%. This is to prevent thrashing as
+      // Increase the capacity by 200%. This is to prevent thrashing as
       // we resize and add more transactions.
-      vec.reserve(unsigned(vec.capacity() * 1.2) + 1u);
+      vec.reserve(vec.capacity() + grow);
     }
     vec.resize(size + 1);
   }
@@ -123,18 +123,15 @@ void VariableWindowDataSet::Append(const Transaction& transaction) {
   auto offset = transaction.id - first_chunk_start_tid;
   auto chunk_idx = offset / chunk_size;
   auto bit_num = offset % chunk_size;
-  for_each(transaction.items.begin(), transaction.items.end(), [&](Item item) {
+  for (Item item : transaction.items) {
     // Get the transaction id list, where this item is present.
-    auto item_idx = item.GetIndex();
-
-    EnsureCapacity(index, item_idx);
-    TidList& tidlist = index.at(item_idx);
-
-    EnsureCapacity(tidlist, chunk_idx);
+    EnsureCapacity(index, item.GetIndex(), index_reserved_chunks);
+    TidList& tidlist = index.at(item.GetIndex());
+    EnsureCapacity(tidlist, chunk_idx, index_reserved_chunks);
     std::bitset<chunk_size>& chunk = tidlist.at(chunk_idx);
 
     chunk.set(bit_num, 1);
-  });
+  }
   transactions.push_back(transaction);
 }
 

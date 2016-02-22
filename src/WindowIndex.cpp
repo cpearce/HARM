@@ -79,15 +79,10 @@ void WindowIndex::Set(unsigned aTid, Item aItem, bool aValue) {
   ASSERT(bitNum < 32);
   unsigned chunk = tidlist[chunkIndex];
   unsigned chunkBefore = chunk;
-  switch (aValue) {
-    case true: {
-      chunk |= (1u << bitNum);
-      break;
-    }
-    case false: {
-      chunk &= (~0 - (1u << bitNum));
-      break;
-    }
+  if (aValue) {
+    chunk |= (1u << bitNum);
+  } else {
+    chunk &= (~0 - (1u << bitNum));
   }
   tidlist[chunkIndex] = chunk;
   if ((chunkBefore == 0 || chunk == 0) &&

@@ -38,11 +38,11 @@ public:
               unsigned numItems = 100);
   ~WindowIndex();
 
-  bool Load();
+  bool Load() override;
 
-  int Count(const ItemSet& aItemSet) const;
-  int Count(const Item& aItem) const;
-  unsigned NumTransactions() const;
+  int Count(const ItemSet& aItemSet) const override;
+  int Count(const Item& aItem) const override;
+  unsigned NumTransactions() const override;
 
   bool IsLoaded() const override;
 

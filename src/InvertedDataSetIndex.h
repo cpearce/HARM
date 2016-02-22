@@ -118,12 +118,12 @@ public:
   InvertedDataSetIndex(const char* aFile, LoadFunctor* f = NULL);
   virtual ~InvertedDataSetIndex();
 
-  bool Load();
+  bool Load() override;
 
-  int Count(const ItemSet& aItemSet) const;
-  int Count(const Item& aItem) const;
+  int Count(const ItemSet& aItemSet) const override;
+  int Count(const Item& aItem) const override;
 
-  unsigned NumTransactions() const {
+  unsigned NumTransactions() const  override {
     return mNumTransactions;
   }
   unsigned GetTID() const {

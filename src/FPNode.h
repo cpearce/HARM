@@ -171,8 +171,8 @@ private:
               std::vector<Item>::const_iterator end,
               unsigned count);
 
-  FPNode* FPNode::GetOrCreateChild(Item aItem);
-  FPNode* FPNode::GetChild(Item aItem) const;
+  FPNode* GetOrCreateChild(Item aItem);
+  FPNode* GetChild(Item aItem) const;
 
   void Replace(const std::vector<Item>& from,
                const std::vector<Item>& to,

@@ -138,7 +138,8 @@ ItemSet PatternInputStream::Read() {
 
   ItemSet itemset;
   for (unsigned i = 0; i < tokens.size(); ++i) {
-    itemset.Add(Item(tokens[i]));
+    Item item(tokens[i]);
+    itemset.Add(item);
   }
   return itemset;
 }

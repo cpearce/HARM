@@ -223,7 +223,7 @@ bool CheckSet(string aExpected, set<ItemSet> aObserved) {
     for (unsigned i = 0; i < items.size(); i++) {
       item1 += Item(items[i]);
     }
-    ItemSet item2 = (*itr);
+    ItemSet item2(*itr);
     ASSERT(item1 == item2);
     if (!(item1 == item2)) {
       return false;

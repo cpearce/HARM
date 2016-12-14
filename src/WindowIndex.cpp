@@ -123,6 +123,7 @@ bool WindowIndex::Get(unsigned aTid, Item aItem) const {
 }
 
 void WindowIndex::VerifyWindow(unsigned aWindowFrontTxnNum) const {
+#ifdef VERIFY_WINDOW
   queue<vector<Item>> window(mWindow);
   unsigned tid = aWindowFrontTxnNum;
   while (window.size()) {
@@ -141,6 +142,7 @@ void WindowIndex::VerifyWindow(unsigned aWindowFrontTxnNum) const {
   }
   cout << "Verified WindowIndex with window [" << aWindowFrontTxnNum <<
        "," << tid << "]" << endl;
+#endif
 }
 
 bool WindowIndex::Load() {

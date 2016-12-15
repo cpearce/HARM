@@ -33,38 +33,6 @@ PatternOutputStream::PatternOutputStream(const char* filename, DataSet* _index)
   }
 }
 
-void PatternStream_Test() {
-  cout << "Testing PatternOutputStream\n";
-  time_t startTime = time(0);
-  PatternOutputStream out("test-output/pattern-output-stream-test.csv", 0);
-  ItemSet itemset("a", "b", "c", "d");
-  const unsigned num = 10000;
-  for (unsigned i = 0; i < num; i++) {
-    out.Write(itemset);
-  }
-  out.Close();
-  time_t duration = time(0) - startTime;
-  cout << "Finished in " << duration << " seconds\n";
-
-
-  PatternInputStream fnf;
-  ASSERT(!fnf.Open("not-a-real-file.blah"));
-  ASSERT(!fnf.IsOpen());
-
-  PatternInputStream in;
-  in.Open("test-output/pattern-output-stream-test.csv");
-  ASSERT(in.IsOpen());
-
-  ItemSet x;
-  unsigned count = 0;
-  while (!(x = in.Read()).IsNull()) {
-    ASSERT(x == itemset);
-    count++;
-  }
-  ASSERT(count == num);
-
-}
-
 void PatternOutputStream::Write(const vector<Item>& pattern) {
   if (pattern.size() == 0) {
     return;

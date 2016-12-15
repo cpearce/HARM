@@ -54,8 +54,6 @@ public:
   bool operator==(const std::vector<Item>& v) const;
   bool operator<(const ItemSet& i) const;
 
-  static void Test();
-
   std::vector<Item> AsVector() const;
 
   bool Contains(Item&) const;

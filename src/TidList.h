@@ -26,8 +26,6 @@ public:
 
 #define TIDLIST_SIZE 512
 
-  static void Test();
-
   // Returns the id of the chunk in mChunks.
   int TidToChunkIdx(int aTid) const {
     return (aTid % TIDLIST_SIZE) / (8 * sizeof(unsigned));

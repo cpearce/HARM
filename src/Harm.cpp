@@ -37,49 +37,13 @@
 
 using namespace std;
 
-// Uncomment to run unit tests.
-// TODO: Use GTest or somesuch instead.
-// #define RUN_UNIT_TESTS
-
 void Apriori(Options& options);
-void Apriori_Test();
-void ResultSet_Test();
-void InvertedDataSetIndex_Test();
 
 int main(int argc, const char* argv[]) {
   srand((int)time(0));
 
-  #ifdef RUN_UNIT_TESTS
-  Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
-  Item::Test();
-  ItemSet::Test();
-  TidList::Test();
-  CoocurrenceGraph::Test();
-  InvertedDataSetIndex_Test();
-  Item::SetCompareMode(Item::INSERTION_ORDER_COMPARE);
-  WindowIndex::Test();
-  Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
-  Apriori_Test();
-  MinAbsSupFilter::Test();
-  Item::ResetBaseId();
-  Test_FPTree();
-  Item::ResetBaseId();
-  List_Test();
-  PatternStream_Test();
-  ItemMap_Test();
-  Item::SetCompareMode(Item::INSERTION_ORDER_COMPARE);
-  StructuralStreamDriftDetector::Test();
-  Item::ResetBaseId();
-  StructuralStreamDriftDetector::TestSpearman();
-  VariableWindowDataSet::Test();
-
-  return 0; //finish testing
-  #endif
-
   cout << "HARM: Compiled " << __DATE__ << ":" << __TIME__ << endl;
   cout << "Copyright (c) 2011, Chris Pearce & Yun Sing Koh" << endl << endl;
-
-
 
   Options options;
 

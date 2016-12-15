@@ -1,1 +1,0 @@
-add_executable(harm Apriori.cpp FPTree.cpp MinAbsSupFilter.cpp VariableWindowDataSet.cpp ConnectionTable.cpp Harm.cpp Options.cpp WindowIndex.cpp CoocurrenceGraph.cpp InvertedDataSetIndex.cpp PatternStream.cpp utils.cpp DataStreamMining.cpp Item.cpp StructuralStreamDriftDetector.cpp FPNode.cpp ItemSet.cpp TidList.cpp)

@@ -44,8 +44,6 @@ public:
 
   void Pop();
 
-  static void Test();
-
   // Size (in bits) for each bitset chunk in the inverted index.
   static const uint32_t chunk_size = 128;
 

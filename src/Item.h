@@ -75,8 +75,6 @@ public:
   };
   static void SetCompareMode(CompareMode aMode);
 
-  static void Test();
-
   const char* GetName() const;
 
 private:

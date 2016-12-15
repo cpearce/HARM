@@ -36,8 +36,6 @@ public:
   // Adds all items that co-occur with a into n
   void GetNeighbourhood(const Item a, std::vector<Item>& n) const;
 
-  static void Test();
-
 private:
 
   // Increments the number of times a and b occur together by 1.

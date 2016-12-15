@@ -46,9 +46,6 @@ public:
   void Add(Transaction& transaction) override;
   void Init(MiningContext* miner) override;
 
-  static void Test();
-  static void TestSpearman();
-
 private:
 
   // Calculates tree "instability", a measure of how much change is required

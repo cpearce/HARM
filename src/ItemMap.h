@@ -163,6 +163,4 @@ private:
   std::vector<bool> valid;
 };
 
-void ItemMap_Test();
-
 #endif

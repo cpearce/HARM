@@ -96,36 +96,3 @@ bool Item::operator<(Item const aItem) const {
   }
   return false;
 }
-
-void Item::Test() {
-  cout << __FUNCTION__ << "()\n";
-
-  Item dog("dog");
-  Item cat("cat");
-
-  ASSERT(dog != cat);
-
-  if (sCmpMode == ALPHABETIC_COMPARE) {
-    ASSERT(cat < dog);
-  } else if (sCmpMode == INSERTION_ORDER_COMPARE) {
-    ASSERT(dog < cat);
-  }
-
-  int dogId = dog;
-  int catId = cat;
-  ASSERT(dogId != catId);
-
-  Item dog2("dog");
-  ASSERT(dog2 == dog);
-
-  int dog2Id = dog2;
-  ASSERT(dog2Id == dogId);
-
-  string dogStr = dog;
-  ASSERT(dogStr == "dog");
-  string catStr = cat;
-  ASSERT(catStr == "cat");
-
-  dog = cat;
-  ASSERT(dog == cat);
-}

@@ -73,7 +73,7 @@ static double pval(int AB, int A, int B, int N) {
   return exp(logsum);
 }
 
-static int MinAbsSup(int A, int B, int N, double E) {
+int MinAbsSup(int A, int B, int N, double E) {
   int limit = min(A, B);
   double sum = 0;
   int AB = max(0, A + B - N);
@@ -97,13 +97,3 @@ bool MinAbsSupFilter::Filter(ItemSet& aItemSet) {
   return mIndex.Count(aItemSet) > minAbsSupValue;
 }
 
-void MinAbsSupFilter::Test() {
-  ASSERT(MinAbsSup(250, 250, 1000, 0.999) == 81);
-  ASSERT(MinAbsSup(250, 500, 1000, 0.999) == 146);
-  ASSERT(MinAbsSup(600, 500, 1000, 0.999) == 324);
-  ASSERT(MinAbsSup(500, 500, 1000, 0.999) == 274);
-  ASSERT(MinAbsSup(500, 1000, 1000, 0.999) == 500);
-  ASSERT(MinAbsSup(500, 1000, 10000, 0.999) == 71);
-  ASSERT(MinAbsSup(50, 1000, 10000, 0.999) == 12);
-  ASSERT(MinAbsSup(50, 5000, 10000, 0.999) == 36);
-}

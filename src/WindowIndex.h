@@ -46,8 +46,6 @@ public:
 
   bool IsLoaded() const override;
 
-  static void Test();
-
 private:
 
   // Records whether aItem's chunk with index aChunkIndex is used or

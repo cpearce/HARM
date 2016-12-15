@@ -73,35 +73,3 @@ unsigned TidList::GetChunk(int aVecId, int aChunkId) const {
 
   return mChunks.at(aVecId)->at(aChunkId);
 }
-
-void TidList::Test() {
-  TidList tl;
-  tl.Set(123, true);
-  ASSERT(tl.Get(123) == true);
-  tl.Set(123, false);
-  ASSERT(tl.Get(123) == false);
-
-  tl.Set(31, true);
-  tl.Set(32, true);
-  tl.Set(33, true);
-  ASSERT(tl.Get(31));
-  ASSERT(tl.Get(32));
-  ASSERT(tl.Get(33));
-
-  tl.Set(31, false);
-  ASSERT(!tl.Get(31));
-  ASSERT(tl.Get(32));
-  ASSERT(tl.Get(33));
-
-  tl.Set(32, false);
-  ASSERT(!tl.Get(31));
-  ASSERT(!tl.Get(32));
-  ASSERT(tl.Get(33));
-
-  tl.Set(33, false);
-  ASSERT(!tl.Get(31));
-  ASSERT(!tl.Get(32));
-  ASSERT(!tl.Get(33));
-
-}
-

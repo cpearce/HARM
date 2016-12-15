@@ -16,6 +16,7 @@
 #define __LIST_H__
 
 #include <set>
+#include <assert.h>
 
 // Double linked list which an handle removal during iteration, and provides
 // tokens to enable O(1) deletion.
@@ -85,7 +86,7 @@ public:
 
   Token Append(T val) {
     if (!tail) {
-      ASSERT(!head);
+      assert(!head);
       tail = head = new Node(val);
     } else {
       Node* n = new Node(val, 0, tail);
@@ -103,7 +104,7 @@ public:
 
   Token Prepend(T val) {
     if (!head) {
-      ASSERT(!tail);
+      assert(!tail);
       head = tail = new Node(val);
     } else {
       head = new Node(val, head, 0);
@@ -155,7 +156,7 @@ public:
     }
 
     T Next() {
-      ASSERT(HasNext());
+      assert(HasNext());
       T val = node->val;
       node = node->next;
       return val;
@@ -198,8 +199,5 @@ public:
 private:
   std::set<Iterator*> iterators;
 };
-
-
-void List_Test();
 
 #endif

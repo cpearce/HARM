@@ -77,8 +77,6 @@ public:
 
   virtual bool Filter(ItemSet& aItem);
 
-  static void Test();
-
 private:
   InvertedDataSetIndex& mIndex;
 };

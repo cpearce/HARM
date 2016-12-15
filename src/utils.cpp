@@ -79,33 +79,11 @@ string TrimWhiteSpace(const string& str) {
   return TrimWhiteSpace(s);
 }
 
-
-
-
-unsigned countUsingLoop(unsigned x) {
-  unsigned r = 0;
-  while (x != 0) {
-    x = x & (x - 1);
-    r++;
-  }
-  return r;
-}
-
-
-unsigned gBitCountLookupTable[256];
-
-unsigned PopulationCount(unsigned x) {
-  return
-    gBitCountLookupTable[x & 0xFF] +
-    gBitCountLookupTable[(x & 0xFF00) >> 8] +
-    gBitCountLookupTable[(x & 0xFF0000) >> 16] +
-    gBitCountLookupTable[(x & 0xFF000000) >> 24];
-}
-
-void InitializePopulationCount() {
-  for (int i = 0; i < 256; i++) {
-    gBitCountLookupTable[i] = countUsingLoop(i);
-  }
+uint32_t PopulationCount(uint32_t i) {
+  // http://stackoverflow.com/a/109025
+  i = i - ((i >> 1) & 0x55555555);
+  i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+  return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
 }
 
 static FILE* gOutputLog = 0;

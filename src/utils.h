@@ -70,8 +70,7 @@ std::string TrimWhiteSpace(const std::string& str);
 
 std::vector<Item> ToItemVector(const std::string& _items);
 
-void InitializePopulationCount();
-unsigned PopulationCount(unsigned x);
+uint32_t PopulationCount(uint32_t x);
 
 
 // A Stack based class to automatically delete a ptr when it's destroyed.

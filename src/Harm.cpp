@@ -47,8 +47,6 @@ void ResultSet_Test();
 void InvertedDataSetIndex_Test();
 
 int main(int argc, const char* argv[]) {
-
-  InitializePopulationCount();
   srand((int)time(0));
 
   #ifdef RUN_UNIT_TESTS

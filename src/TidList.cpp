@@ -25,15 +25,10 @@ void TidList::Set(int aTid, bool aValue) {
   unsigned chunk = GetChunk(vidx, chunkIdx);
 
   int bitNum = TidToChunkBitNum(aTid);
-  switch (aValue) {
-    case true: {
-      chunk |= (1 << bitNum);
-      break;
-    }
-    case false: {
-      chunk &= (~0 - (1 << bitNum));
-      break;
-    }
+  if (aValue) {
+    chunk |= (1 << bitNum);
+  } else {
+    chunk &= (~0 - (1 << bitNum));
   }
   //v->at(chunkIdx) = chunk;
   SetChunk(vidx, chunkIdx, chunk);

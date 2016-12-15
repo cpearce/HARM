@@ -58,7 +58,7 @@ ItemSet& ItemSet::operator+=(Item aOther) {
   return *this;
 }
 
-bool ItemSet::operator==(ItemSet& aOther) const {
+bool ItemSet::operator==(const ItemSet& aOther) const {
   if (Size() != aOther.Size()) {
     return false;
   }

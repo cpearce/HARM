@@ -50,7 +50,7 @@ public:
   ItemSet& operator+=(Item i);
   ItemSet operator-(Item i) const;
   operator std::string() const;
-  bool operator==(ItemSet& i) const;
+  bool operator==(const ItemSet& i) const;
   bool operator==(const std::vector<Item>& v) const;
   bool operator<(const ItemSet& i) const;
 

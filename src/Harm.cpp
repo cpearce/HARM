@@ -17,23 +17,8 @@
 #include <iostream>
 #include <fstream>
 #include <stdint.h>
-#include "utils.h"
-#include "Item.h"
-#include "ItemSet.h"
-#include "InvertedDataSetIndex.h"
-#include "AprioriFilter.h"
-#include "TidList.h"
-#include "debug.h"
-#include "Options.h"
-#include "List.h"
-#include "PatternStream.h"
-#include <sstream>
-#include "ItemMap.h"
-#include "WindowIndex.h"
 #include "FPTree.h"
 #include "DataStreamMining.h"
-#include "VariableWindowDataSet.h"
-#include "StructuralStreamDriftDetector.h"
 
 using namespace std;
 

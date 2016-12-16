@@ -40,6 +40,7 @@ extern void GenerateCandidates(const set<ItemSet>& aCandidates,
                                int aItemSetSize,
                                AprioriFilter* aFilter,
                                int numThreads);
+extern void GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
                                       AprioriFilter& aFilter,
                                       set<ItemSet>& aCandidates);
 extern bool ContainsAllSubSets(const set<ItemSet>& aContainer,

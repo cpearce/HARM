@@ -134,7 +134,7 @@ void GenerateCandidates(const set<ItemSet>& aCandidates,
   }
 }
 
-void GenerateInitialCandidates(InvertedDataSetIndex& aIndex,
+void GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
                                AprioriFilter& aFilter,
                                set<ItemSet>& aCandidates) {
   const set<Item> items = aIndex.GetItems();

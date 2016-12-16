@@ -137,7 +137,7 @@ void GenerateCandidates(const set<ItemSet>& aCandidates,
 void GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
                                AprioriFilter& aFilter,
                                set<ItemSet>& aCandidates) {
-  const set<Item> items = aIndex.GetItems();
+  const set<Item>& items = aIndex.GetItems();
   set<Item>::const_iterator itr = items.begin();
   while (itr != items.end()) {
     Item item = *itr;

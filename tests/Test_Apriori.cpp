@@ -36,13 +36,12 @@ bool CheckSet(string aExpected, set<ItemSet> aObserved) {
 }
 
 extern void GenerateCandidates(const set<ItemSet>& aCandidates,
-                        set<ItemSet>& aResult,
-                        int aItemSetSize,
-                        AprioriFilter* aFilter,
-                        int numThreads);
-extern void GenerateInitialCandidates(InvertedDataSetIndex& aIndex,
-                               AprioriFilter& aFilter,
-                               set<ItemSet>& aCandidates);
+                               set<ItemSet>& aResult,
+                               int aItemSetSize,
+                               AprioriFilter* aFilter,
+                               int numThreads);
+                                      AprioriFilter& aFilter,
+                                      set<ItemSet>& aCandidates);
 extern bool ContainsAllSubSets(const set<ItemSet>& aContainer,
                                const ItemSet& aItemSet);
 

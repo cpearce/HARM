@@ -63,7 +63,10 @@ TEST(List, main) {
 TEST(PatternStream, main) {
   cout << "Testing PatternOutputStream\n";
   time_t startTime = time(0);
-  PatternOutputStream out("test-output/pattern-output-stream-test.csv", 0);
+
+  shared_ptr<std::ostringstream> sstream(make_shared<std::ostringstream>());
+  PatternOutputStream out(sstream, nullptr);
+
   ItemSet itemset("a", "b", "c", "d");
   const unsigned num = 10000;
   for (unsigned i = 0; i < num; i++) {
@@ -73,13 +76,7 @@ TEST(PatternStream, main) {
   time_t duration = time(0) - startTime;
   cout << "Finished in " << duration << " seconds\n";
 
-
-  PatternInputStream fnf;
-  EXPECT_FALSE(fnf.Open("not-a-real-file.blah"));
-  EXPECT_FALSE(fnf.IsOpen());
-
-  PatternInputStream in;
-  in.Open("test-output/pattern-output-stream-test.csv");
+  PatternInputStream in(make_shared<istringstream>(sstream->str()));
   EXPECT_TRUE(in.IsOpen());
 
   ItemSet x;

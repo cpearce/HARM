@@ -65,7 +65,8 @@ TEST(FPTree, TestInitialConstruction) {
   EXPECT_EQ(s, "(root:0 (i1:2 (i3:2)) (i2:7 (i1:4 (i3:2 (i5:1)) (i4:1) (i5:1)) (i3:2) (i4:1)))");
   EXPECT_EQ(fptree->NumNodes(), 11);
 
-  PatternOutputStream output("datasets/test/fp-test-patterns.csv", 0);
+  shared_ptr<std::ostringstream> stream(make_shared<std::ostringstream>());
+  PatternOutputStream output(stream, 0);
   vector<Item> pattern;
   FPGrowth(fptree, output, pattern, &index, 0);
   output.Close();
@@ -92,8 +93,7 @@ TEST(FPTree, TestInitialConstruction) {
     {"i2","i3"},
   };
 
-  PatternInputStream input;
-  input.Open("datasets/test/fp-test-patterns.csv");
+  PatternInputStream input(make_shared<istringstream>(stream->str()));
   EXPECT_TRUE(input.IsOpen());
   ItemSet itemset;
   size_t expectedIndex = 0;
@@ -163,13 +163,13 @@ TEST(FPTree, AddPatternsInPath) {
   string s = t->GetRoot()->ToString();
   cout << s.c_str() << endl;
 
-  PatternOutputStream output("datasets/test/add-patterns-in-path-test.csv", 0);
+  shared_ptr<std::ostringstream> sstream(make_shared<std::ostringstream>());
+  PatternOutputStream output(sstream, nullptr);
   vector<Item> path;
   AddPatternsInPath(t->GetRoot()->FirstChild(), output, path);
   output.Close();
 
-  PatternInputStream input;
-  input.Open("datasets/test/add-patterns-in-path-test.csv");
+  PatternInputStream input(make_shared<istringstream>(sstream->str()));
   EXPECT_TRUE(input.IsOpen());
   vector<ItemSet> v = input.ToVector();
   cout << "Results:\n";

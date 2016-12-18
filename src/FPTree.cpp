@@ -206,8 +206,15 @@ void MineFPTree(FPTree* fptree,
   DurationTimer timer;
 
   bool writeItemSets = !countItemSetsOnly;
-  PatternOutputStream output(writeItemSets ? itemSetsOuputFilename.c_str() : 0,
-                             writeItemSets ? index : 0);
+
+  PatternOutputStream output;
+  if (writeItemSets) {
+    shared_ptr<ostream> stream = std::make_shared<std::ofstream>(itemSetsOuputFilename);
+    if (!stream->good()) {
+      cerr << "FAIL: Can't open " << itemSetsOuputFilename << " for PatternStreamWriter output!" << endl;      exit(-1);    }
+    output = move(PatternOutputStream(stream, index));
+  }
+
   vector<Item> pattern;
   FPGrowth(fptree, output, pattern, index, minCount, treePruneDepth, filter);
   output.Close();
@@ -216,22 +223,11 @@ void MineFPTree(FPTree* fptree,
       output.GetNumPatterns(), timer.Seconds(),
       (!writeItemSets ? " (not saved to disk)" : ""));
 
-  #ifdef _DEBUG
-  if (writeItemSets) {
-    PatternInputStream input;
-    input.Open(itemSetsOuputFilename.c_str());
-    ASSERT(input.IsOpen());
-    vector<ItemSet> v = input.ToVector();
-    ASSERT(v.size() == output.GetNumPatterns());
-  }
-  #endif
-
   if (!writeItemSets) {
     Log("Skipping rule generation because itemsets weren't saved to disk to generate from\n");
   } else {
     long numRules = 0;
-    PatternInputStream input;
-    input.Open(itemSetsOuputFilename.c_str());
+    PatternInputStream input(make_shared<ifstream>(itemSetsOuputFilename));
     ASSERT(input.IsOpen());
     GenerateRules(input, 0.9, 1.0, numRules, index, rulesOuputFilename, countRulesOnly);
   }

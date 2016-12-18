@@ -21,17 +21,21 @@
 
 using namespace std;
 
-PatternOutputStream::PatternOutputStream(const char* filename, DataSet* _index)
-  : index(_index), numPatterns(0), isFakeWriter(filename == 0 && _index == 0) {
-  if (isFakeWriter) {
-    // We're a fake output stream, don't write anything.
-    return;
-  }
-  stream.open(filename, ios::out);
-  if (!stream) {
-    cerr << "FAIL: Can't open " << filename << " for PatternStreamWriter output!" << endl;
-    exit(-1);
-  }
+PatternOutputStream::PatternOutputStream(shared_ptr<ostream> _stream,
+                                         DataSet* _index)
+  : index(_index)
+  , numPatterns(0)
+  , stream(move(_stream))
+{
+}
+
+PatternOutputStream&
+PatternOutputStream::operator=(PatternOutputStream&& other)
+{
+  index = other.index;
+  stream = move(other.stream);
+  numPatterns = other.numPatterns;
+  return *this;
 }
 
 void PatternOutputStream::Write(const vector<Item>& pattern) {
@@ -39,7 +43,7 @@ void PatternOutputStream::Write(const vector<Item>& pattern) {
     return;
   }
 
-  if (isFakeWriter) {
+  if (IsFakeWriter()) {
     numPatterns++;
     return;
   }
@@ -57,18 +61,30 @@ void PatternOutputStream::Write(const ItemSet& itemset) {
   }
 
   numPatterns++;
-  if (isFakeWriter) {
+  if (IsFakeWriter()) {
     return;
   }
 
   string s = itemset;
   double sup = (index) ? index->Support(itemset) : 0;
-  stream << s << "," << sup << "\n";
+  (*stream) << s << "," << sup << "\n";
+}
+
+void PatternOutputStream::Close() {
+  ASSERT(IsFakeWriter() || !stream || stream->good());
+  if (stream) {
+    stream->flush();
+  }
+}
+
+PatternInputStream::PatternInputStream(std::shared_ptr<std::istream> stream)
+  : file(move(stream))
+{
 }
 
 vector<ItemSet> PatternInputStream::ToVector() {
   vector<ItemSet> v;
-  ASSERT(file.is_open());
+  ASSERT(file->good());
   ItemSet i;
   while (!(i = Read()).IsNull()) {
     v.push_back(i);
@@ -76,24 +92,13 @@ vector<ItemSet> PatternInputStream::ToVector() {
   return v;
 }
 
-
-bool PatternInputStream::Open(const char* filename) {
-  file.open(filename, ios::in);
-  return file.is_open();
-}
-
-void PatternOutputStream::Close() {
-  ASSERT(isFakeWriter || stream.is_open());
-  stream.close();
-}
-
 ItemSet PatternInputStream::Read() {
-  if (!file.is_open() || file.eof()) {
+  if (!file->good() || file->eof()) {
     return ItemSet();
   }
   string line;
   vector<string> tokens;
-  if (!getline(file, line)) {
+  if (!getline(*file, line)) {
     return ItemSet();
   }
   size_t end = line.rfind(",");

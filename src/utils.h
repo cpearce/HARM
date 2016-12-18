@@ -19,7 +19,7 @@
 #include <vector>
 #include <chrono>
 #include <math.h>
-#include "InvertedDataSetIndex.h"
+#include "Options.h"
 #include "ItemSet.h"
 #include "PatternStream.h"
 

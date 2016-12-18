@@ -32,14 +32,14 @@ using namespace std;
 // transaction insertion. Will be slow on large datasets.
 //#define VERIFY_WINDOW 1
 
-WindowIndex::WindowIndex(const char* aFile,
+WindowIndex::WindowIndex(std::unique_ptr<DataSetReader> aReader,
                          LoadFunctor* aFunctor,
                          unsigned windowLength,
                          unsigned aNumItems)
-  : DataSet(aFile, aFunctor),
+  : DataSet(move(aReader), aFunctor),
     mMaxLength(windowLength),
-    mMaxItemId(0),
-    mLoaded(false) {
+    mMaxItemId(0)
+{
   Item::ResetBaseId();
   mIndex.reserve(aNumItems);
 }
@@ -146,21 +146,20 @@ void WindowIndex::VerifyWindow(unsigned aWindowFrontTxnNum) const {
 }
 
 bool WindowIndex::Load() {
-  cout << "WindowIndex loading data file: '" << mFile << endl;
+  cout << "WindowIndex loading input stream..." << endl;
 
-  DataSetReader reader;
-  if (!reader.Open(mFile)) {
-    cerr << "Can't open " << mFile << " failing!" << endl;
+  if (!mReader->IsGood()) {
+    cerr << "ERROR: Can't open input stream failing!" << endl;
     exit(-1);
   }
 
   if (mFunctor) {
-    mFunctor->OnStartLoad();
+    mFunctor->OnStartLoad(mReader);
   }
 
   vector<Item> transaction;
   unsigned transactionNum = 0;
-  while (reader.GetNext(transaction)) {
+  while (mReader->GetNext(transaction)) {
     // Transaction number, starting from 0.
     if (mWindow.size() == mMaxLength) {
       if (mFunctor) {

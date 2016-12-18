@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "FPTree.h"
 #include "FPNode.h"
+#include "TestDataSets.h"
 
 #include <string>
 #include <iostream>
@@ -53,7 +54,7 @@ i1,i2,i3
 */
 TEST(FPTree, TestInitialConstruction) {
   Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
-  InvertedDataSetIndex index("datasets/test/fp-test.csv");
+  InvertedDataSetIndex index(FPTestDataSet());
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
   options.inputFileName = "datasets/test/fp-test.csv";
   FPTree* fptree = CreateFPTree(&index, options);
@@ -119,7 +120,7 @@ TEST(FPTree, TestInitialConstruction) {
 
 TEST(FPTree, HasSinglePath) {
   Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
-  InvertedDataSetIndex index("datasets/test/single-path.csv");
+  InvertedDataSetIndex index(SinglePathDataSetReader());
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
   options.inputFileName = "datasets/test/single-path.csv";
   FPTree* fptree = CreateFPTree(&index, options);
@@ -206,7 +207,7 @@ void TestConstructConditionalTree_inner(DataSet* index,
 TEST(FPTree, ConstructConditionalTree) {
   Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
   {
-    InvertedDataSetIndex index("datasets/test/fp-test.csv");
+    InvertedDataSetIndex index(FPTestDataSet());
     Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
     options.inputFileName = "datasets/test/fp-test.csv";
     FPTree* fptree = CreateFPTree(&index, options);
@@ -225,7 +226,7 @@ TEST(FPTree, ConstructConditionalTree) {
     delete fptree;
   }
   {
-    InvertedDataSetIndex index("datasets/test/fp-test5.csv");
+    InvertedDataSetIndex index(FPTest5DataSetReader());
     Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
     options.inputFileName = "datasets/test/fp-test5.csv";
     FPTree* fptree = CreateFPTree(&index, options);
@@ -241,7 +242,7 @@ TEST(FPTree, ConstructConditionalTree) {
 // TODO: Make these tests EXPECT something.
 static void TestFPGrowth() {
   Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
-  InvertedDataSetIndex index("datasets/test/fp-test.csv");
+  InvertedDataSetIndex index(FPTestDataSet());
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
   options.inputFileName = "datasets/test/fp-test.csv";
   FPTree* fptree = CreateFPTree(&index, options);
@@ -274,7 +275,7 @@ static void TestFPGrowth() {
 static void TestFPGrowth2() {
   cout << endl << "test fp3" << endl;
   // -i datasets/test/fp-test3.csv -m fptree -o output/fptree-fp-test3 -minsup 0.2
-  InvertedDataSetIndex index("datasets/test/fp-test3.csv");
+  InvertedDataSetIndex index(FPTest3DataSetReader());
   Options options(0, kFPTree, 0, 0, 0, 0, 0, 0, 0);
   options.inputFileName = "datasets/test/fp-test3.csv";
   FPTree* fptree = CreateFPTree(&index, options);
@@ -312,7 +313,7 @@ TEST(FPTree, Stream) {
     options.inputFileName = "datasets/test/census2.csv";
     options.outputFilePrefix = "census2-out";
 
-    InvertedDataSetIndex index("datasets/test/census2.csv");
+    InvertedDataSetIndex index(Census2DataSetReader());
     FPTree* cantree = CreateFPTree(&index, options);
     EXPECT_TRUE(!!cantree);
     if (!cantree) {
@@ -342,7 +343,7 @@ TEST(FPTree, Stream) {
 
 TEST(FPTree, TreeSorted) {
   {
-    InvertedDataSetIndex index("datasets/test/census2.csv");
+    InvertedDataSetIndex index(Census2DataSetReader());
     Options options(0, kFPTree, UINT_MAX, 0, 0, 0, 0, 0, 0);
     options.inputFileName = "datasets/test/census2.csv";
     FPTree* cantree = CreateFPTree(&index, options);
@@ -376,7 +377,7 @@ TEST(FPTree, TreeSorted) {
   {
     Item::ResetBaseId();
 
-    InvertedDataSetIndex index("datasets/test/fp-test3.csv");
+    InvertedDataSetIndex index(FPTest3DataSetReader());
     Options options(0, kCpTree, UINT_MAX, 0, 0, 0, 0, 0, 0);
     FPTree* cantree = CreateFPTree(&index, options);
     EXPECT_TRUE(!!cantree);
@@ -399,7 +400,7 @@ TEST(FPTree, TreeSorted) {
   {
     Item::ResetBaseId();
 
-    InvertedDataSetIndex index("datasets/test/census2.csv");
+    InvertedDataSetIndex index(Census2DataSetReader());
     Options options(0, kCpTree, UINT_MAX, 0, 0, 0, 0, 0, 0);
     FPTree* cantree = CreateFPTree(&index, options);
     EXPECT_TRUE(!!cantree);
@@ -440,7 +441,7 @@ TEST(FPTree, SpoTree) {
   {
     Item::ResetBaseId();
 
-    InvertedDataSetIndex index("datasets/test/census2.csv");
+    InvertedDataSetIndex index(Census2DataSetReader());
     Options options(0, kSpoTree, 0, 0, 0.15, 0, 0, 0, 0);
     FPTree* spotree = CreateFPTree(&index, options);
     EXPECT_TRUE(!!spotree);

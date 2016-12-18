@@ -156,14 +156,8 @@ protected:
 class DDTreeFunctor : public FPTreeFunctor {
 public:
 
-  void OnStartLoad() {
-    Log("\nDDTreeMiner");
-    Log("\nLoading dataset into cpTree and extrapTree...\n");
-    if (mOptions.ddResultsFile.is_open()) {
-      mOptions.ddResultsFile << mOptions.inputFileName << std::endl;
-    }
-    overal_timer.Reset();
-    FPTreeFunctor::OnStartLoad();
+  void OnStartLoad(std::unique_ptr<DataSetReader>& aReader) {
+
   }
 
   void OnLoad(const std::vector<Item>& txn) {
@@ -295,6 +289,12 @@ public:
     fpResultsFlg = fpResults->is_open();
     inputfile = aOptions.inputFileName;
 
+    Log("\nDDTreeMiner");
+    Log("\nLoading dataset into cpTree and extrapTree...\n");
+    if (mOptions.ddResultsFile.is_open()) {
+      mOptions.ddResultsFile << mOptions.inputFileName << std::endl;
+    }
+    overal_timer.Reset();
   }
 
   ExtrapTreeFunctor* ExtrapFunctor;

@@ -3,12 +3,13 @@
 #include "TidList.h"
 #include "WindowIndex.h"
 #include "VariableWindowDataSet.h"
+#include "TestDataSets.h"
 
 using namespace std;
 
 TEST(InvertedDataSetIndex, main) {
   {
-    InvertedDataSetIndex index("NotARealFileName");
+    InvertedDataSetIndex index(make_unique<DataSetReader>(make_unique<ifstream>("NotAValidFilePath")));
     ASSERT_TRUE(!index.Load());
   }
   {
@@ -21,7 +22,7 @@ TEST(InvertedDataSetIndex, main) {
       z,x,y
       z,x,y,i
     */
-    InvertedDataSetIndex index("datasets/test/test1.data");
+    InvertedDataSetIndex index(Test1DataSetReader());
     ASSERT_TRUE(index.Load());
     ASSERT_TRUE(index.Count(Item("a")) == 1);
     ASSERT_TRUE(index.Count(Item("b")) == 1);
@@ -68,7 +69,7 @@ TEST(InvertedDataSetIndex, main) {
       aa, gg,
       aa, bb
     */
-    InvertedDataSetIndex index1("datasets/test/test2.data");
+    InvertedDataSetIndex index1(Test2DataSetReader());
     ASSERT_TRUE(index1.Load());
     ASSERT_TRUE(index1.Count(Item("aa")) == 3);
     ASSERT_TRUE(index1.Count(ItemSet("aa", "bb")) == 2);
@@ -90,7 +91,7 @@ TEST(InvertedDataSetIndex, main) {
   }
 
   {
-    InvertedDataSetIndex index1("datasets/test/UCI-zoo.csv");
+    InvertedDataSetIndex index1(UCIZooDataSetReader());
     // hair = 1 count == 43
     ASSERT_TRUE(index1.Load());
     ASSERT_TRUE(index1.Count(Item("hair=1")) == 43);
@@ -104,7 +105,7 @@ TEST(InvertedDataSetIndex, main) {
       aa, gg,
       aa, bb
     */
-    InvertedDataSetIndex index1("datasets/test/test2.data");
+    InvertedDataSetIndex index1(Test2DataSetReader());
     ASSERT_TRUE(index1.Load());
     ASSERT_TRUE(index1.Count(Item("aa")) == 3);
     ASSERT_TRUE(index1.Count(ItemSet("aa", "bb")) == 2);
@@ -207,7 +208,7 @@ TEST(CoocurrenceGraph, main) {
 TEST(WindowIndex, main) {
   Item::SetCompareMode(Item::ALPHABETIC_COMPARE);
   {
-    WindowIndex index("datasets/test/test1.data", NULL, 10, 1);
+    WindowIndex index(Test1DataSetReader(), NULL, 10, 1);
     bool loaded = index.Load();
     EXPECT_EQ(index.Count(Item("a")), 1);
     EXPECT_EQ(index.Count(Item("b")), 1);
@@ -235,7 +236,7 @@ TEST(WindowIndex, main) {
     EXPECT_TRUE(loaded);
   }
   {
-    WindowIndex index("datasets/test/test1.data", NULL, 2, 1);
+    WindowIndex index(Test1DataSetReader(), NULL, 2, 1);
     bool loaded = index.Load();
     EXPECT_TRUE(loaded);
   }
@@ -246,7 +247,7 @@ TEST(WindowIndex, main) {
       aa, gg,
       aa, bb
     */
-    WindowIndex index1("datasets/test/test2.data", NULL, 3, 1);
+    WindowIndex index1(Test2DataSetReader(), NULL, 3, 1);
     EXPECT_TRUE(index1.Load());
     EXPECT_EQ(index1.Count(Item("aa")), 3);
     EXPECT_EQ(index1.Count(ItemSet("aa", "bb")), 2);
@@ -255,7 +256,7 @@ TEST(WindowIndex, main) {
   }
 
   {
-    WindowIndex index1("datasets/test/UCI-zoo.csv", NULL, 101, 1);
+    WindowIndex index1(UCIZooDataSetReader(), NULL, 101, 1);
     // hair = 1 count == 43
     EXPECT_TRUE(index1.Load());
     EXPECT_EQ(index1.Count(Item("hair=1")), 43);

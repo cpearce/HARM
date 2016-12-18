@@ -17,11 +17,14 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <iostream>
+#include <memory>
 
 #include "CoocurrenceGraph.h"
 #include "Options.h"
 #include "utils.h"
 #include "ItemSet.h"
+#include "DataSetReader.h"
 
 class TidList;
 
@@ -33,7 +36,7 @@ class LoadFunctor {
 public:
 
   // TODO: don't need to pass in duration anymore.
-  virtual void OnStartLoad() = 0;
+  virtual void OnStartLoad(std::unique_ptr<DataSetReader>& aReader) = 0;
 
   // Called when a transaction is loaded into the dataset.
   virtual void OnLoad(const std::vector<Item>& txn) = 0;
@@ -53,16 +56,15 @@ public:
 class DataSet {
 protected:
 
-  DataSet(const char* aFile, LoadFunctor* aFunctor)
+  DataSet(std::unique_ptr<DataSetReader> aReader, LoadFunctor* aFunctor)
     : mFunctor(aFunctor)
-    , mFile(aFile) {
+    , mReader(move(aReader)) {
   }
 
   LoadFunctor* mFunctor;
+  std::unique_ptr<DataSetReader> mReader;
 
 public:
-
-  const char* mFile;
 
   void SetLoadListener(LoadFunctor* aListener) {
     mFunctor = aListener;
@@ -115,7 +117,7 @@ public:
 
 class InvertedDataSetIndex : public DataSet {
 public:
-  InvertedDataSetIndex(const char* aFile, LoadFunctor* f = NULL);
+  InvertedDataSetIndex(std::unique_ptr<DataSetReader> aReader, LoadFunctor* f = NULL);
   virtual ~InvertedDataSetIndex();
 
   bool Load() override;
@@ -140,9 +142,9 @@ protected:
 
   // Maps Item Id to list of transactions containing that item.
   std::map<int, TidList> mInvertedIndex;
-  unsigned mNumTransactions;
-  unsigned mTxnId;
-  bool mLoaded;
+  unsigned mNumTransactions = 0;
+  unsigned mTxnId = 0;
+  bool mLoaded = false;
 
   // Stores each item in the data set.
   std::set<Item> mItems;

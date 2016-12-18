@@ -20,6 +20,7 @@
 
 #include <time.h>
 #include <stdlib.h>
+#include <memory>
 
 #include "Item.h"
 #include "debug.h"
@@ -29,11 +30,20 @@
 class DataSetReader {
 public:
 
-  // Opens the CSV file with path aFilename for reading transactions.
-  bool Open(const std::string& aFileName) {
+  DataSetReader(std::unique_ptr<std::istream> aInput)
+    : mInput(move(aInput))
+  {
+  }
+
+  bool IsGood() {
+    return mInput->good();
+  }
+
+  bool Rewind() {
     mLineNumber = 0;
-    mInput.open(aFileName);
-    return mInput.is_open();
+    mInput->clear(); // Clear EOF flag if necessary.
+    mInput->seekg(std::istream::beg);
+    return IsGood();
   }
 
   // Returns the next transaction in the file. Note duplicate items in
@@ -44,14 +54,14 @@ public:
     std::string line;
     aTransaction.clear();
     aTransaction.reserve(20);
-    if (!getline(mInput, line)) {
+    if (!getline(*mInput, line)) {
       return false;
     }
     ++mLineNumber;
     std::vector<std::string> tokens;
     Tokenize(line, tokens, ",");
     if (tokens.size() == 0) {
-      std::cerr << "Null transcation on line '" << mLineNumber << "' failing!\n";
+      std::cerr << "Null transaction on line '" << mLineNumber << "' failing!\n";
       exit(-1);
     }
 
@@ -80,6 +90,6 @@ public:
     return true;
   }
 private:
-  std::ifstream mInput;
-  unsigned mLineNumber;
+  std::unique_ptr<std::istream> mInput;
+  uint64_t mLineNumber = 0;
 };

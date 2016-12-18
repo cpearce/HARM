@@ -32,7 +32,7 @@ public:
   // numItems: Suggested amount of space to reserve for the number of items in
   //   the inverted index. For optimal performance, make this the exact number
   //   of unique items in the data set.
-  WindowIndex(const char* aFile,
+  WindowIndex(std::unique_ptr<DataSetReader> aReader,
               LoadFunctor* aFunctor,
               unsigned windowLength,
               unsigned numItems = 100);

@@ -60,27 +60,6 @@ struct FreqCmp : public ItemComparator {
   const ItemMap<unsigned>& freq;
 };
 
-
-struct CountCmp {
-  CountCmp(DataSet* i) : index(i) {}
-  bool operator()(Item a, Item b) {
-    return index->Count(a) > index->Count(b);
-  }
-  DataSet* index;
-};
-
-bool VerifySortedByCount(vector<Item>& txn, DataSet* index) {
-  for (unsigned i = 1; i < txn.size(); i++) {
-    int p = index->Count(txn[i - 1]);
-    int t = index->Count(txn[i]);
-    if (p < t) {
-      return false;
-    }
-  }
-  return true;
-}
-
-
 void AddPatternsInPath(const FPNode* tree,
                        PatternOutputStream& output,
                        vector<Item>& pattern,
@@ -421,40 +400,6 @@ LoadFunctor* CreateLoadFunctor(DataSet* index, FPTree* fptree, Options& options)
   }
 }
 
-void ConstructFPInitialTree(FPTree* fptree,
-                            DataSet* index,
-                            Options& options) {
-  assert(options.mode == kFPTree);
-  assert(index->IsLoaded());
-
-  DataSetReader reader;
-  if (!reader.Open(options.inputFileName)) {
-    cerr << "ERROR: Can't open " << options.inputFileName << " failing!" << endl;
-    exit(-1);
-  }
-
-  TreeMetricsLogger logger(fptree, options.logTreeTxn);
-  TransactionId tid = 0;
-  while (true) {
-    Transaction transaction(tid);
-    if (!reader.GetNext(transaction.items)) {
-      // Failed to read, no more transactions.
-      break;
-    }
-    // Sort in non-increasing order by count.
-    CountCmp c(index);
-    sort(transaction.items.begin(), transaction.items.end(), c);
-    ASSERT(VerifySortedByCount(transaction.items, index));
-
-    fptree->Insert(transaction.items);
-    logger.OnTxn();
-
-    // Increment the transaction id, so that the next transaction
-    // has a monotonically increasing id.
-    tid++;
-  }
-}
-
 FPTree* CreateFPTree(DataSet* aDataSet, Options& options) {
   FPTree* fptree = new FPTree();
   aDataSet->SetLoadListener(CreateLoadFunctor(aDataSet, fptree, options));
@@ -474,10 +419,11 @@ void FPTreeMiner(Options& options) {
 
   Log("\nLoading dataset into tree...\n");
   AutoPtr<DataSet> index = 0;
+  auto reader = make_unique<DataSetReader>(make_unique<ifstream>(options.inputFileName));
   if (isStreaming) {
-    index = new WindowIndex(options.inputFileName.c_str(), NULL, options.blockSize);
+    index = new WindowIndex(move(reader), NULL, options.blockSize);
   } else {
-    index = new InvertedDataSetIndex(options.inputFileName.c_str());
+    index = new InvertedDataSetIndex(move(reader));
   }
   FPTree* fptree = CreateFPTree(index, options);
   if (!fptree) {
@@ -550,11 +496,34 @@ FPTreeFunctor::FPTreeFunctor(FPTree* aTree,
     mIndex(aIndex) {
 }
 
-void FPTreeFunctor::OnStartLoad() {
+void FPTreeFunctor::OnStartLoad(unique_ptr<DataSetReader>& aReader) {
+  if (mOptions.mode != kFPTree) {
+    return;
+  }
+
+  // Make a pass of the data set to determine item frequencies.
+  vector<Item> transaction;
+  mInitialFrequencyTable.Clear();
+  aReader->Rewind();
+  while (aReader->GetNext(transaction)) {
+    for (const Item item : transaction) {
+      mInitialFrequencyTable.Increment(item, 1);
+    }
+  }
+  aReader->Rewind();
 }
 
 void FPTreeFunctor::OnLoad(const std::vector<Item>& txn) {
   mLogger.OnTxn();
+
+  if (mOptions.mode == kFPTree) {
+    // Sort in non-increasing order by (pre-determined) item frequency.
+    FreqCmp c(mInitialFrequencyTable);
+    auto transaction = txn;
+    sort(transaction.begin(), transaction.end(), c);
+    mTree->Insert(txn);
+  }
+
   mTxnNum++;
   if (mIsStreaming && (mTxnNum % mBlockSize) == 0) {
     Log("Mining rules at txnNum=%d\n", mTxnNum);
@@ -576,13 +545,7 @@ void FPTreeFunctor::OnLoad(const std::vector<Item>& txn) {
 }
 
 void FPTreeFunctor::OnUnload(const std::vector<Item>& txn) {
-
 }
 
 void FPTreeFunctor::OnEndLoad() {
-  if (mOptions.mode == kFPTree) {
-    // Vanilla FPTree mode constructs its FPTree after loading the dataset,
-    // so that it knows which items are frequent.
-    ConstructFPInitialTree(mTree, mIndex, mOptions);
-  }
 }

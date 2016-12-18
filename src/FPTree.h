@@ -60,7 +60,7 @@ public:
                 DataSet* aIndex,
                 Options& aOptions);
 
-  void OnStartLoad() override;
+  void OnStartLoad(std::unique_ptr<DataSetReader>& aReader) override;
 
   void OnLoad(const std::vector<Item>& txn) override;
 
@@ -80,6 +80,7 @@ public:
   unsigned mBlockSize;
   unsigned mMiningRun;
   DataSet* mIndex;
+  ItemMap<unsigned> mInitialFrequencyTable;
 };
 
 void MineFPTree(FPTree* fptree,

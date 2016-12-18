@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <memory>
+#include <map>
 
 #include "Item.h"
 #include "List.h"

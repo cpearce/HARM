@@ -34,11 +34,10 @@ using namespace std;
 // We can only handle 1 index at a time.
 static unsigned gIndexCount = 0;
 
-InvertedDataSetIndex::InvertedDataSetIndex(const char* aFileName, LoadFunctor* aFunctor)
-  : DataSet(aFileName, aFunctor),
-    mNumTransactions(0),
-    mTxnId(0),
-    mLoaded(false) {
+InvertedDataSetIndex::InvertedDataSetIndex(unique_ptr<DataSetReader> aReader,
+                                           LoadFunctor* aFunctor)
+  : DataSet(move(aReader), aFunctor)
+{
   Item::ResetBaseId();
   gIndexCount++;
   ASSERT(gIndexCount == 1);
@@ -50,7 +49,7 @@ InvertedDataSetIndex::~InvertedDataSetIndex() {
 }
 
 bool InvertedDataSetIndex::Load() {
-  cout << "Loading data file: '" << mFile << "'\n";
+  cout << "Loading data set" << endl;
   DurationTimer timer;
 
   mInvertedIndex.clear();
@@ -59,18 +58,17 @@ bool InvertedDataSetIndex::Load() {
   mTxnId = 0;
   mLoaded = false;
 
-  DataSetReader reader;
-  if (!reader.Open(mFile)) {
-    cerr << "Can't open " << mFile << " failing!" << endl;
+  if (!mReader->IsGood()) {
+    cerr << "ERROR: Can't read input;failing!" << endl;
     return false;
   }
 
   if (mFunctor) {
-    mFunctor->OnStartLoad();
+    mFunctor->OnStartLoad(mReader);
   }
 
   vector<Item> transaction;
-  while (reader.GetNext(transaction)) {
+  while (mReader->GetNext(transaction)) {
     ++mNumTransactions;
     ++mTxnId;
     for (unsigned i = 0; i < transaction.size(); ++i) {

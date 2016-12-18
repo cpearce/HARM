@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "AprioriFilter.h"
+#include "TestDataSets.h"
 
 #include <iostream>
 #include <string>
@@ -51,7 +52,7 @@ TEST(Apriori_Test, main) {
   Item::ResetBaseId();
 
   {
-    InvertedDataSetIndex index("datasets/test/test3.data");
+    InvertedDataSetIndex index(Test3DataSet());
     ASSERT_TRUE(index.Load());
     ASSERT_TRUE(index.GetNumItems() == 20);
 
@@ -106,7 +107,7 @@ TEST(Apriori_Test, main) {
   }
   {
     // Test a simulation of Apriori, with the data set given by Agrual's paper.
-    InvertedDataSetIndex index("datasets/test/test4.data");
+    InvertedDataSetIndex index(Test4DataSet());
     ASSERT_TRUE(index.Load());
 
     /*

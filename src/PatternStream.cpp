@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "PatternStream.h"
+#include "InvertedDataSetIndex.h"
 #include "utils.h"
 #include <stdio.h>
 #include <time.h>

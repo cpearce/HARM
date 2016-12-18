@@ -78,8 +78,8 @@ void MineDataStream(const Options& options) {
   unique_ptr<StreamMiner> miner(CreateStreamMiner(options));
   miner->Init(&context);
 
-  DataSetReader reader;
-  if (!reader.Open(options.inputFileName)) {
+  DataSetReader reader(make_unique<ifstream>(options.inputFileName));
+  if (!reader.IsGood()) {
     cerr << "ERROR: Can't open " << options.inputFileName << " failing!" << endl;
     exit(-1);
   }

@@ -323,7 +323,7 @@ TEST(FPTree, Stream) {
 
     string ts = cantree->ToString();
     cout << "Tree: " << ts << endl;
-    cantree->DumpToGraphViz("test-output/cptree-census2.dot");
+    //cantree->DumpToGraphViz("test-output/cptree-census2.dot");
 
     printf("freq before sort:\n");
     cantree->DumpFreq();
@@ -332,7 +332,7 @@ TEST(FPTree, Stream) {
     printf("\n\nfreq AFTER sort:\n");
     cantree->DumpFreq();
 
-    cantree->DumpToGraphViz("test-output/cptree-census2.sorted.dot");
+    //cantree->DumpToGraphViz("test-output/cptree-census2.sorted.dot");
     ts = cantree->ToString();
     cout << "Sorted Tree: " << ts << endl;
     EXPECT_TRUE(cantree->IsSorted());
@@ -352,7 +352,7 @@ TEST(FPTree, TreeSorted) {
 
     string ts = cantree->ToString();
     cout << "Tree: " << ts << endl;
-    cantree->DumpToGraphViz("datasets/test/census.dot");
+    //cantree->DumpToGraphViz("datasets/test/census.dot");
 
     cantree->Sort();
     EXPECT_TRUE(cantree->IsSorted());
@@ -385,12 +385,12 @@ TEST(FPTree, TreeSorted) {
 
     string ts = cantree->ToString();
     cout << "Tree: " << ts << endl;
-    cantree->DumpToGraphViz("test-output/cp-tree-fp-test3.dot");
+    //cantree->DumpToGraphViz("test-output/cp-tree-fp-test3.dot");
 
     EXPECT_TRUE(cantree->IsSorted());
 
     cantree->Sort();
-    cantree->DumpToGraphViz("test-output/cp-tree-fp-test3.sorted.dot");
+    //cantree->DumpToGraphViz("test-output/cp-tree-fp-test3.sorted.dot");
     ts = cantree->ToString();
     cout << "Sorted Tree: " << ts << endl;
     EXPECT_TRUE(cantree->IsSorted());
@@ -409,7 +409,7 @@ TEST(FPTree, TreeSorted) {
 
     string ts = cantree->ToString();
     cout << "Tree: " << ts << endl;
-    cantree->DumpToGraphViz("test-output/cptree-census2.dot");
+    //cantree->DumpToGraphViz("test-output/cptree-census2.dot");
 
     printf("freq before sort:\n");
     cantree->DumpFreq();
@@ -418,7 +418,7 @@ TEST(FPTree, TreeSorted) {
     printf("\n\nfreq AFTER sort:\n");
     cantree->DumpFreq();
 
-    cantree->DumpToGraphViz("test-output/cptree-census2.sorted.dot");
+    //cantree->DumpToGraphViz("test-output/cptree-census2.sorted.dot");
     ts = cantree->ToString();
     cout << "Sorted Tree: " << ts << endl;
     EXPECT_TRUE(cantree->IsSorted());
@@ -449,7 +449,7 @@ TEST(FPTree, SpoTree) {
 
     string ts = spotree ->ToString();
     cout << "Tree: " << ts << endl;
-    spotree->DumpToGraphViz("test-output/spotree-census2.dot");
+    //spotree->DumpToGraphViz("test-output/spotree-census2.dot");
 
     EXPECT_TRUE(spotree->IsSorted());
     /*
@@ -460,7 +460,7 @@ TEST(FPTree, SpoTree) {
     printf("\n\nfreq AFTER sort:\n");
     spotree->DumpFreq();
 
-    spotree->DumpToGraphViz("test-output/cptree-census2.sorted.dot");
+    //spotree->DumpToGraphViz("test-output/cptree-census2.sorted.dot");
     ts = spotree->ToString();
     cout << "Sorted Tree: " << ts << endl;
     ASSERT(spotree->IsSorted());*/

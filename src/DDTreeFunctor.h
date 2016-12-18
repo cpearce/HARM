@@ -155,11 +155,6 @@ protected:
 
 class DDTreeFunctor : public FPTreeFunctor {
 public:
-
-  void OnStartLoad(std::unique_ptr<DataSetReader>& aReader) {
-
-  }
-
   void OnLoad(const std::vector<Item>& txn) {
     ExtrapFunctor->OnLoad(txn);
     CpFunctor->OnLoad(txn);

@@ -34,9 +34,7 @@ class TidList;
 
 class LoadFunctor {
 public:
-
-  // TODO: don't need to pass in duration anymore.
-  virtual void OnStartLoad(std::unique_ptr<DataSetReader>& aReader) = 0;
+  virtual void OnStartLoad(std::unique_ptr<DataSetReader>& aReader) {};
 
   // Called when a transaction is loaded into the dataset.
   virtual void OnLoad(const std::vector<Item>& txn) = 0;

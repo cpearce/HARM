@@ -47,7 +47,7 @@
 
 using namespace std;
 
-// Comparison in non-increasing order of frequency, tie-breaking on appearnce
+// Comparison in non-increasing order of frequency, tie-breaking on appearance
 // in dataset order. i.e. items with higher frequency are considered "greater",
 // tie break so that items which were encountered earlier are considered "greater".
 struct FreqCmp : public ItemComparator {

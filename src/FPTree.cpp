@@ -211,7 +211,9 @@ void MineFPTree(FPTree* fptree,
   if (writeItemSets) {
     shared_ptr<ostream> stream = std::make_shared<std::ofstream>(itemSetsOuputFilename);
     if (!stream->good()) {
-      cerr << "FAIL: Can't open " << itemSetsOuputFilename << " for PatternStreamWriter output!" << endl;      exit(-1);    }
+      cerr << "FAIL: Can't open " << itemSetsOuputFilename << " for PatternStreamWriter output!" << endl;
+      exit(-1);
+    }
     output = move(PatternOutputStream(stream, index));
   }
 

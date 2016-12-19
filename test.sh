@@ -10,15 +10,15 @@ for i in "${tests[@]}"
 do
 	echo $i
 
-  x64/Release/Harm.exe -i datasets/test/$i.csv -m apriori -o test-output/apriori-$i -minsup 0.2
+  build/Release/Harm.exe -i datasets/test/$i.csv -m apriori -o test-output/apriori-$i -minsup 0.2
   echo ==================================================================
-  x64/Release/Harm.exe -i datasets/test/$i.csv -m fptree -o test-output/fptree-$i -minsup 0.2
+  build/Release/Harm.exe -i datasets/test/$i.csv -m fptree -o test-output/fptree-$i -minsup 0.2
   echo ==================================================================
-  x64/Release/Harm.exe -i datasets/test/$i.csv -m cantree -o test-output/cantree-$i -minsup 0.2
+  build/Release/Harm.exe -i datasets/test/$i.csv -m cantree -o test-output/cantree-$i -minsup 0.2
   echo ========================================	==========================
-  x64/Release/Harm.exe -i datasets/test/$i.csv -m cptree -o test-output/cptree-$i -minsup 0.2 -cp-sort-interval 1000
+  build/Release/Harm.exe -i datasets/test/$i.csv -m cptree -o test-output/cptree-$i -minsup 0.2 -cp-sort-interval 1000
   echo ==================================================================
-  x64/Release/Harm.exe -i datasets/test/$i.csv -m spotree -o test-output/spotree-$i -minsup 0.2 -spo-entropy-threshold 0.1
+  build/Release/Harm.exe -i datasets/test/$i.csv -m spotree -o test-output/spotree-$i -minsup 0.2 -spo-entropy-threshold 0.1
 
   sort < test-output/fptree-$i.itemsets.support.csv > test-output/fptree-$i.itemsets.support.sorted.csv
   sort < test-output/cantree-$i.itemsets.support.csv > test-output/cantree-$i.itemsets.support.sorted.csv
@@ -73,12 +73,12 @@ done
 # the UCI-zoo dataset partitioned into 25 line chunks.
 
 # First mine the dataset in streaming mode.
-x64/Release/Harm.exe -i datasets/test/UCI-zoo.csv -m stream -o test-output/stream-UCI-zoo -minsup 0.6 -blockSize 25
+build/Release/Harm.exe -i datasets/test/UCI-zoo.csv -m stream -o test-output/stream-UCI-zoo -minsup 0.6 -blockSize 25
 
 # Mine each quarter of UCI zoo using regular apriori.
 for i in {1..4}
 do
-  x64/Release/Harm.exe -i datasets/test/UCI-zoo-$i.csv -m apriori -o test-output/apriori-UCI-zoo-$i -minsup 0.6 
+  build/Release/Harm.exe -i datasets/test/UCI-zoo-$i.csv -m apriori -o test-output/apriori-UCI-zoo-$i -minsup 0.6
 done
 
 # Compare each output chunk.

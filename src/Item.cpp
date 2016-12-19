@@ -77,6 +77,7 @@ Item::operator string() const {
 void Item::ResetBaseId() {
   gItemNameToId.clear();
   gItemIdCount = 1;
+  gIdToItemName.Clear();
 }
 
 // Operator less than...

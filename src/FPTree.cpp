@@ -514,10 +514,20 @@ void FPTreeFunctor::OnLoad(const std::vector<Item>& txn) {
 
   if (mOptions.mode == kFPTree) {
     // Sort in non-increasing order by (pre-determined) item frequency.
-    FreqCmp c(mInitialFrequencyTable);
     auto transaction = txn;
-    sort(transaction.begin(), transaction.end(), c);
-    mTree->Insert(txn);
+
+    struct Comparator {
+      Comparator(const ItemMap<unsigned>& f) : freq(f) {}
+      bool operator()(const Item a, const Item b) {
+        assert(freq.Contains(a));
+        assert(freq.Contains(a));
+        return freq.Get(a) > freq.Get(b);
+      }
+      const ItemMap<unsigned>& freq;
+    };
+
+    sort(transaction.begin(), transaction.end(), Comparator(mInitialFrequencyTable));
+    mTree->Insert(transaction);
   }
 
   mTxnNum++;

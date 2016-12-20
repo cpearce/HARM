@@ -26,6 +26,7 @@
 #include <thread>
 #include "Options.h"
 #include <sstream>
+#include <future>
 
 using namespace std;
 
@@ -46,35 +47,41 @@ bool ContainsAllSubSets(const set<ItemSet>& aContainer, const ItemSet& aItemSet)
   return true;
 }
 
-void
-GenCanWorker(const set<ItemSet>& aCandidates,
-             set<ItemSet>& aResult,
-             int aItemSetSize,
-             shared_ptr<AprioriFilter> aFilter,
-             bool aOdd)
+static void
+safeAdvance(set<ItemSet>::const_iterator& aIter,
+            const set<ItemSet>::const_iterator end,
+            uint32_t aStep)
 {
-  int mask = aOdd ? 1 : 0;
-
-  set<ItemSet>::const_iterator x = aCandidates.begin();
-  set<ItemSet>::const_iterator end = aCandidates.end();
-  int counter = 0;
-  for (x; x != end; x++, counter++) {
-
-    // Skip this one if it's being done by the other worker thread.
-    if ((counter & 1) == mask) {
-      continue;
+  for (uint32_t i = 0; i < aStep; i++) {
+    if (aIter == end) {
+      return;
     }
+    aIter++;
+  }
+}
 
+set<ItemSet>
+GenerateSubCandidates(const set<ItemSet>& aCandidates,
+                      uint32_t aStartOffset,
+                      uint32_t aItemSetSize,
+                      uint32_t aStep,
+                      shared_ptr<AprioriFilter> aFilter)
+{
+  set<ItemSet> result;
+  set<ItemSet>::const_iterator iter = aCandidates.cbegin();
+  safeAdvance(iter, aCandidates.end(), aStartOffset);
+  for (iter; iter != aCandidates.end(); safeAdvance(iter, aCandidates.end(), aStep)) {
     set<ItemSet>::const_iterator y = aCandidates.begin();
-    for (y; y != end; y++) {
-      if (IntersectionSize((*x), (*y)) == aItemSetSize - 2) {
-        ItemSet itemset((*x), (*y));
+    for (y; y != aCandidates.end(); y++) {
+      if (IntersectionSize((*iter), (*y)) == aItemSetSize - 2) {
+        ItemSet itemset((*iter), (*y));
         if (aFilter->Filter(itemset) && ContainsAllSubSets(aCandidates, itemset)) {
-          aResult.insert(itemset);
+          result.insert(itemset);
         }
       }
     } // for y
   } // for x
+  return result;
 }
 
 set<ItemSet>
@@ -83,55 +90,23 @@ GenerateCandidates(const set<ItemSet>& aCandidates,
                    shared_ptr<AprioriFilter> aFilter,
                    int numThreads)
 {
-  set<ItemSet> result;
-  if (numThreads > 1) {
-
-    // Just do dual-threaded approach for now...
-    // TODO: Implement for more threads...
-    set<ItemSet> evenResults;
-    std::thread even(&GenCanWorker, 
-                     aCandidates,
-                     std::ref(evenResults),
-                     aItemSetSize,
-                     aFilter,
-                     false);
-
-    set<ItemSet> oddResults;
-    std::thread odd(&GenCanWorker,
-                    aCandidates,
-                    std::ref(oddResults),
-                    aItemSetSize,
-                    aFilter,
-                    true);
-    even.join();
-    odd.join();
-
-    cout << "evenResults.size()=" << evenResults.size() << endl;
-    cout << "oddResults.size()=" << oddResults.size() << endl;
-
-    result.insert(evenResults.begin(), evenResults.end());
-    result.insert(oddResults.begin(), oddResults.end());
-
-  } else {
-
-    // Single threaded approach.
-    set<ItemSet>::const_iterator x = aCandidates.begin();
-    set<ItemSet>::const_iterator end = aCandidates.end();
-    for (x; x != end; x++) {
-      set<ItemSet>::const_iterator y = aCandidates.begin();
-      for (y; y != end; y++) {
-        if (IntersectionSize((*x), (*y)) == aItemSetSize - 2) {
-          ItemSet itemset((*x), (*y));
-          if (aFilter->Filter(itemset) && ContainsAllSubSets(aCandidates, itemset)) {
-            result.insert(itemset);
-          }
-        }
-      } // for y
-    } // for x
-
+  const uint32_t cores = std::thread::hardware_concurrency();
+  vector<future<set<ItemSet>>> futures;
+  set<ItemSet>::iterator end = aCandidates.end();
+  for (uint32_t i = 0; i < cores; i++) {
+    auto future = std::async(std::launch::async,
+                             GenerateSubCandidates,
+                             aCandidates, i, aItemSetSize, cores, aFilter);
+    futures.push_back(move(future));
   }
 
-  return result;
+  set<ItemSet> results;
+  for (future<set<ItemSet>>& future : futures) {
+    const set<ItemSet>& result = future.get();
+    results.insert(result.begin(), result.end());
+  }
+ 
+  return results;
 }
 
 set<ItemSet>

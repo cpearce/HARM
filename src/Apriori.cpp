@@ -50,7 +50,7 @@ void
 GenCanWorker(const set<ItemSet>& aCandidates,
              set<ItemSet>& aResult,
              int aItemSetSize,
-             AprioriFilter* aFilter,
+             shared_ptr<AprioriFilter> aFilter,
              bool aOdd)
 {
   int mask = aOdd ? 1 : 0;
@@ -80,7 +80,7 @@ GenCanWorker(const set<ItemSet>& aCandidates,
 set<ItemSet>
 GenerateCandidates(const set<ItemSet>& aCandidates,
                    int aItemSetSize,
-                   AprioriFilter* aFilter,
+                   shared_ptr<AprioriFilter> aFilter,
                    int numThreads)
 {
   set<ItemSet> result;
@@ -136,7 +136,7 @@ GenerateCandidates(const set<ItemSet>& aCandidates,
 
 set<ItemSet>
 GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
-                          AprioriFilter* aFilter) {
+                          shared_ptr<AprioriFilter> aFilter) {
   set<ItemSet> candidates;
   for (const Item item : aIndex.GetItems()) {
     ItemSet itemset = item;
@@ -154,11 +154,11 @@ void Apriori(Options& options) {
   vector<ItemSet> result;
 
   int k = 1;
-  AprioriFilter* filter = nullptr;
+  shared_ptr<AprioriFilter> filter = nullptr;
   if (options.mode == kApriori) {
-    filter = new MinSupportFilter(options.minSup, index);
+    filter = make_shared<MinSupportFilter>(options.minSup, index);
   } else if (options.mode == kMinAbssup) {
-    filter = new MinAbsSupFilter(index);
+    filter = make_shared<MinAbsSupFilter>(index);
   }
 
   Log("Generating initial candidates...\n");
@@ -190,6 +190,4 @@ void Apriori(Options& options) {
   vector<Rule> rules;
   long numRules = 0;
   GenerateRules(result, 0.9, 1.0, numRules, &index, options.outputFilePrefix, options.countRulesOnly);
-
-  delete filter;
 }

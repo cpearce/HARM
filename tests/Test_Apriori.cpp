@@ -39,12 +39,12 @@ bool CheckSet(string aExpected, set<ItemSet> aObserved) {
 extern set<ItemSet>
 GenerateCandidates(const set<ItemSet>& aCandidates,
                    int aItemSetSize,
-                   AprioriFilter* aFilter,
+                   shared_ptr<AprioriFilter> aFilter,
                    int numThreads);
 
 extern set<ItemSet>
 GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
-                          AprioriFilter* aFilter);
+                          shared_ptr<AprioriFilter> aFilter);
 
 extern bool ContainsAllSubSets(const set<ItemSet>& aContainer,
                                const ItemSet& aItemSet);
@@ -60,13 +60,13 @@ TEST(Apriori_Test, main) {
 
     // Test GenerateInitialCandidates().
     {
-      MinSupportFilter msf(0.6, index);
-      set<ItemSet> candidates = GenerateInitialCandidates(index, &msf);
+      shared_ptr<AprioriFilter> msf = make_shared<MinSupportFilter>(0.6, index);
+      set<ItemSet> candidates = GenerateInitialCandidates(index, msf);
       ASSERT_TRUE(CheckSet("a s u", candidates));
     }
     {
-      MinSupportFilter msf(0.3, index);
-      set<ItemSet> candidates = GenerateInitialCandidates(index, &msf);
+      shared_ptr<AprioriFilter> msf = make_shared<MinSupportFilter>(0.3, index);
+      set<ItemSet> candidates = GenerateInitialCandidates(index, msf);
       // Candidates are: {a,c,d,e,f,g,r,s,t,u,w,y}
       CheckSet("a c d e f g r s t u w y", candidates);
     }
@@ -83,23 +83,20 @@ TEST(Apriori_Test, main) {
     }
     // Test GenerateCandidates()...
     {
-      set<ItemSet> P;
-      set<ItemSet> R;
-      AlwaysAcceptFilter F;
-
       ASSERT_TRUE(IntersectionSize(ItemSet("1", "2", "3"), ItemSet("1", "2", "4")) == 2);
       ASSERT_TRUE(IntersectionSize(ItemSet("1", "2", "4"), ItemSet("1", "3", "4")) == 2);
       ASSERT_TRUE(IntersectionSize(ItemSet("1", "3", "4"), ItemSet("1", "3", "5")) == 2);
       ASSERT_TRUE(IntersectionSize(ItemSet("1", "2", "3"), ItemSet("2", "3", "4")) == 2);
 
-
+      set<ItemSet> P;
       P.insert(ItemSet("1", "2", "3"));
       P.insert(ItemSet("1", "2", "4"));
       P.insert(ItemSet("1", "3", "4"));
       P.insert(ItemSet("1", "3", "5"));
       P.insert(ItemSet("2", "3", "4"));
 
-      R = GenerateCandidates(P, 4, &F, 1);
+      shared_ptr<AprioriFilter> F = make_shared<AlwaysAcceptFilter>();
+      set<ItemSet> R = GenerateCandidates(P, 4, F, 1);
 
       ASSERT_TRUE(R.size() == 1);
       ASSERT_TRUE(*R.begin() == ItemSet("1", "2", "3", "4"));
@@ -129,15 +126,15 @@ TEST(Apriori_Test, main) {
     ASSERT_TRUE((c = index.Count(ItemSet("3"))) == 3);
     ASSERT_TRUE((c = index.Count(ItemSet("5"))) == 3);
 
-    MinCountFilter filter(2, index);
-    set<ItemSet> initialCandidates = GenerateInitialCandidates(index, &filter);
+    shared_ptr<AprioriFilter> filter = make_shared<MinCountFilter>(2, index);
+    set<ItemSet> initialCandidates = GenerateInitialCandidates(index, filter);
     ASSERT_TRUE(CheckSet("1 2 3 5", initialCandidates));
 
     // Test next generation...
-    set<ItemSet> candidates = GenerateCandidates(initialCandidates, 2, &filter, 1);
+    set<ItemSet> candidates = GenerateCandidates(initialCandidates, 2, filter, 1);
     ASSERT_TRUE(CheckSet("1,3 2,3 2,5 3,5", candidates));
 
-    candidates = GenerateCandidates(candidates, 3, &filter, 1);
+    candidates = GenerateCandidates(candidates, 3, filter, 1);
     ASSERT_TRUE(CheckSet("2,3,5", candidates));
 
   }

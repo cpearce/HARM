@@ -29,8 +29,6 @@
 
 using namespace std;
 
-void FPTreeMiner(Options& options);
-
 bool ContainsAllSubSets(const set<ItemSet>& aContainer, const ItemSet& aItemSet) {
   ItemSet k(aItemSet);
 

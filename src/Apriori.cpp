@@ -30,7 +30,6 @@
 using namespace std;
 
 void FPTreeMiner(Options& options);
-void Test_FPTree();
 
 bool ContainsAllSubSets(const set<ItemSet>& aContainer, const ItemSet& aItemSet) {
   ItemSet k(aItemSet);

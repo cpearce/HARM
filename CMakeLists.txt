@@ -10,22 +10,49 @@ add_subdirectory(googletest)
 
 add_library(harm_main
   src/Apriori.cpp
+  src/AprioriFilter.h
+  src/CPTreeFunctor.h
+  src/CanTreeFunctor.h
   src/ConnectionTable.cpp
+  src/ConnectionTable.h
   src/CoocurrenceGraph.cpp
+  src/CoocurrenceGraph.h
+  src/DDTreeFunctor.h
+  src/DataSetReader.h
   src/DataStreamMining.cpp
+  src/DataStreamMining.h
+  src/DiscTreeFunctor.h
+  src/ExtrapTreeFunctor.h
   src/FPNode.cpp
+  src/FPNode.h
   src/FPTree.cpp
+  src/FPTree.h
   src/InvertedDataSetIndex.cpp
+  src/InvertedDataSetIndex.h
   src/Item.cpp
+  src/Item.h
+  src/ItemMap.h
   src/ItemSet.cpp
+  src/ItemSet.h
+  src/List.h
   src/MinAbsSupFilter.cpp
   src/Options.cpp
+  src/Options.h
   src/PatternStream.cpp
+  src/PatternStream.h
+  src/SpoTreeFunctor.h
   src/StructuralStreamDriftDetector.cpp
+  src/StructuralStreamDriftDetector.h
+  src/TestDataSets.h
   src/TidList.cpp
+  src/TidList.h
   src/VariableWindowDataSet.cpp
+  src/VariableWindowDataSet.h
   src/WindowIndex.cpp
+  src/WindowIndex.h  
+  src/debug.h
   src/utils.cpp
+  src/utils.h
 )
 
 add_executable(harm src/Harm.cpp)

@@ -36,14 +36,16 @@ bool CheckSet(string aExpected, set<ItemSet> aObserved) {
   return true;
 }
 
-extern void GenerateCandidates(const set<ItemSet>& aCandidates,
-                               set<ItemSet>& aResult,
-                               int aItemSetSize,
-                               AprioriFilter* aFilter,
-                               int numThreads);
-extern void GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
-                                      AprioriFilter& aFilter,
-                                      set<ItemSet>& aCandidates);
+extern set<ItemSet>
+GenerateCandidates(const set<ItemSet>& aCandidates,
+                   int aItemSetSize,
+                   AprioriFilter* aFilter,
+                   int numThreads);
+
+extern set<ItemSet>
+GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
+                          AprioriFilter* aFilter);
+
 extern bool ContainsAllSubSets(const set<ItemSet>& aContainer,
                                const ItemSet& aItemSet);
 
@@ -58,15 +60,13 @@ TEST(Apriori_Test, main) {
 
     // Test GenerateInitialCandidates().
     {
-      set<ItemSet> candidates;
       MinSupportFilter msf(0.6, index);
-      GenerateInitialCandidates(index, msf, candidates);
+      set<ItemSet> candidates = GenerateInitialCandidates(index, &msf);
       ASSERT_TRUE(CheckSet("a s u", candidates));
     }
     {
-      set<ItemSet> candidates;
       MinSupportFilter msf(0.3, index);
-      GenerateInitialCandidates(index, msf, candidates);
+      set<ItemSet> candidates = GenerateInitialCandidates(index, &msf);
       // Candidates are: {a,c,d,e,f,g,r,s,t,u,w,y}
       CheckSet("a c d e f g r s t u w y", candidates);
     }
@@ -99,7 +99,7 @@ TEST(Apriori_Test, main) {
       P.insert(ItemSet("1", "3", "5"));
       P.insert(ItemSet("2", "3", "4"));
 
-      GenerateCandidates(P, R, 4, &F, 1);
+      R = GenerateCandidates(P, 4, &F, 1);
 
       ASSERT_TRUE(R.size() == 1);
       ASSERT_TRUE(*R.begin() == ItemSet("1", "2", "3", "4"));
@@ -130,19 +130,15 @@ TEST(Apriori_Test, main) {
     ASSERT_TRUE((c = index.Count(ItemSet("5"))) == 3);
 
     MinCountFilter filter(2, index);
-    set<ItemSet> initialCandidates;
-    GenerateInitialCandidates(index, filter, initialCandidates);
+    set<ItemSet> initialCandidates = GenerateInitialCandidates(index, &filter);
     ASSERT_TRUE(CheckSet("1 2 3 5", initialCandidates));
 
-    //Test next generation...
-    set<ItemSet> nextGen;
-    GenerateCandidates(initialCandidates, nextGen, 2, &filter, 1);
-    ASSERT_TRUE(CheckSet("1,3 2,3 2,5 3,5", nextGen));
+    // Test next generation...
+    set<ItemSet> candidates = GenerateCandidates(initialCandidates, 2, &filter, 1);
+    ASSERT_TRUE(CheckSet("1,3 2,3 2,5 3,5", candidates));
 
-    set<ItemSet> tmp = nextGen;
-    nextGen.clear();
-    GenerateCandidates(tmp, nextGen, 3, &filter, 1);
-    ASSERT_TRUE(CheckSet("2,3,5", nextGen));
+    candidates = GenerateCandidates(candidates, 3, &filter, 1);
+    ASSERT_TRUE(CheckSet("2,3,5", candidates));
 
   }
 }

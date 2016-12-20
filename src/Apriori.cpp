@@ -77,12 +77,13 @@ GenCanWorker(const set<ItemSet>& aCandidates,
   } // for x
 }
 
-void GenerateCandidates(const set<ItemSet>& aCandidates,
-                        set<ItemSet>& aResult,
-                        int aItemSetSize,
-                        AprioriFilter* aFilter,
-                        int numThreads) {
-
+set<ItemSet>
+GenerateCandidates(const set<ItemSet>& aCandidates,
+                   int aItemSetSize,
+                   AprioriFilter* aFilter,
+                   int numThreads)
+{
+  set<ItemSet> result;
   if (numThreads > 1) {
 
     // Just do dual-threaded approach for now...
@@ -108,8 +109,8 @@ void GenerateCandidates(const set<ItemSet>& aCandidates,
     cout << "evenResults.size()=" << evenResults.size() << endl;
     cout << "oddResults.size()=" << oddResults.size() << endl;
 
-    aResult.insert(evenResults.begin(), evenResults.end());
-    aResult.insert(oddResults.begin(), oddResults.end());
+    result.insert(evenResults.begin(), evenResults.end());
+    result.insert(oddResults.begin(), oddResults.end());
 
   } else {
 
@@ -122,28 +123,28 @@ void GenerateCandidates(const set<ItemSet>& aCandidates,
         if (IntersectionSize((*x), (*y)) == aItemSetSize - 2) {
           ItemSet itemset((*x), (*y));
           if (aFilter->Filter(itemset) && ContainsAllSubSets(aCandidates, itemset)) {
-            aResult.insert(itemset);
+            result.insert(itemset);
           }
         }
       } // for y
     } // for x
 
   }
+
+  return result;
 }
 
-void GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
-                               AprioriFilter& aFilter,
-                               set<ItemSet>& aCandidates) {
-  const set<Item>& items = aIndex.GetItems();
-  set<Item>::const_iterator itr = items.begin();
-  while (itr != items.end()) {
-    Item item = *itr;
-    itr++;
+set<ItemSet>
+GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
+                          AprioriFilter* aFilter) {
+  set<ItemSet> candidates;
+  for (const Item item : aIndex.GetItems()) {
     ItemSet itemset = item;
-    if (aFilter.Filter(itemset)) {
-      aCandidates.insert(itemset);
+    if (aFilter->Filter(itemset)) {
+      candidates.insert(move(itemset));
     }
   }
+  return candidates;
 }
 
 void Apriori(Options& options) {
@@ -160,11 +161,8 @@ void Apriori(Options& options) {
     filter = new MinAbsSupFilter(index);
   }
 
-  set<ItemSet> candidates;
-  set<ItemSet> temp;
-
   Log("Generating initial candidates...\n");
-  GenerateInitialCandidates(index, *filter, candidates);
+  set<ItemSet> candidates = GenerateInitialCandidates(index, filter);
   result.insert(result.end(), candidates.begin(), candidates.end());
 
   Log("Generated %u candidates\n", candidates.size());
@@ -174,10 +172,8 @@ void Apriori(Options& options) {
   while (candidates.size() != 0) {
     time_t startTime = time(0);
     k++;
-    GenerateCandidates(candidates, temp, k, filter, options.numThreads);
-    result.insert(result.end(), temp.begin(), temp.end());
-    candidates = temp;
-    temp.clear();
+    candidates = GenerateCandidates(candidates, k, filter, options.numThreads);
+    result.insert(result.end(), candidates.begin(), candidates.end());
 
     time_t timeTaken = (time(0) - startTime);
     Log("=============\n");

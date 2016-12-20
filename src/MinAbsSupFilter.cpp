@@ -86,7 +86,7 @@ int MinAbsSup(int A, int B, int N, double E) {
   return limit;
 }
 
-bool MinAbsSupFilter::Filter(ItemSet& aItemSet) {
+bool MinAbsSupFilter::Filter(ItemSet& aItemSet) const {
   // Get constituent item with lowest support
   Item a = GetItemWithLowestSupport(aItemSet, mIndex);
   ItemSet b = aItemSet - a;

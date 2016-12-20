@@ -90,11 +90,11 @@ public:
   virtual int Count(const ItemSet& aItemSet) const = 0;
   virtual int Count(const Item& aItem) const = 0;
 
-  double Support(const ItemSet& aItemSet) {
+  double Support(const ItemSet& aItemSet) const {
     return (double)Count(aItemSet) / (double)NumTransactions();
   }
 
-  double Support(const Item& aItem) {
+  double Support(const Item& aItem) const {
     return (double)Count(aItem) / (double)NumTransactions();
   }
 

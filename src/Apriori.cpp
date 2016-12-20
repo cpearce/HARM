@@ -147,8 +147,6 @@ void GenerateInitialCandidates(const InvertedDataSetIndex& aIndex,
 }
 
 void Apriori(Options& options) {
-
-  // Fix up so it uses sets or whatever.
   InvertedDataSetIndex index(make_unique<DataSetReader>(make_unique<ifstream>(options.inputFileName)));
   index.Load();
 

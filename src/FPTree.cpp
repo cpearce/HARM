@@ -231,7 +231,10 @@ void MineFPTree(FPTree* fptree,
     long numRules = 0;
     PatternInputStream input(make_shared<ifstream>(itemSetsOuputFilename));
     ASSERT(input.IsOpen());
+    Log("Generating rules...\n");
+    DurationTimer timer;
     GenerateRules(input, 0.9, 1.0, numRules, index, rulesOuputFilename, countRulesOnly);
+    Log("Generated %d rules in %.3lfs%s...\n", numRules, timer.Seconds());
   }
   Log("-----------------------------------------------\n");
 }

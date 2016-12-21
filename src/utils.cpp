@@ -240,8 +240,6 @@ void GenerateRules(const vector<ItemSet>& aItemsets,
                    DataSet* aIndex,
                    string aOutputPrefix,
                    bool countRulesOnly) {
-  time_t startTime = time(0);
-
   aNumRules = 0;
 
   string filename = GetOutputRuleFileName(aOutputPrefix);
@@ -255,9 +253,6 @@ void GenerateRules(const vector<ItemSet>& aItemsets,
                            candidate.mItems.begin(), candidate.mItems.end(),
                            antecedent, consequent, countRulesOnly, out);
   }
-
-  time_t timeTaken = time(0) - startTime;
-  Log("Generated %d rules in %lld seconds\n", aNumRules, timeTaken);
 }
 
 // Converts a string in "a,b,c" form to a vector of items [a,b,c].

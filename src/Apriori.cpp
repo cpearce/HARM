@@ -164,5 +164,8 @@ void Apriori(Options& options) {
 
   vector<Rule> rules;
   long numRules = 0;
+  Log("Generating rules...\n");
+  DurationTimer timer;
   GenerateRules(result, 0.9, 1.0, numRules, &index, options.outputFilePrefix, options.countRulesOnly);
+  Log("Generated %d rules in %.3lfs%s...\n", numRules, timer.Seconds());
 }

@@ -52,10 +52,7 @@ safeAdvance(set<ItemSet>::const_iterator& aIter,
             const set<ItemSet>::const_iterator end,
             uint32_t aStep)
 {
-  for (uint32_t i = 0; i < aStep; i++) {
-    if (aIter == end) {
-      return;
-    }
+  for (uint32_t i = 0; i < aStep && aIter != end; i++) {
     aIter++;
   }
 }
@@ -72,11 +69,12 @@ GenerateSubCandidates(const set<ItemSet>& aCandidates,
   safeAdvance(iter, aCandidates.end(), aStartOffset);
   for (iter; iter != aCandidates.end(); safeAdvance(iter, aCandidates.end(), aStep)) {
     set<ItemSet>::const_iterator y = aCandidates.begin();
-    for (y; y != aCandidates.end(); y++) {
-      if (IntersectionSize((*iter), (*y)) == aItemSetSize - 2) {
-        ItemSet itemset((*iter), (*y));
+    for (const ItemSet& y : aCandidates) {
+      const ItemSet& x = *iter;
+      if (IntersectionSize(x, y) == aItemSetSize - 2) {
+        ItemSet itemset(x, y);
         if (aFilter->Filter(itemset) && ContainsAllSubSets(aCandidates, itemset)) {
-          result.insert(itemset);
+          result.insert(move(itemset));
         }
       }
     } // for y

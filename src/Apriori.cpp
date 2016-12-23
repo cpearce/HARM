@@ -88,7 +88,7 @@ GenerateCandidates(const set<ItemSet>& aCandidates,
                    shared_ptr<AprioriFilter> aFilter,
                    int numThreads)
 {
-  const uint32_t cores = std::thread::hardware_concurrency();
+  const uint32_t cores = numThreads;
   vector<future<set<ItemSet>>> futures;
   set<ItemSet>::iterator end = aCandidates.end();
   for (uint32_t i = 0; i < cores; i++) {

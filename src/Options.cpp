@@ -288,9 +288,13 @@ bool ParseArgs(int argc, const char* argv[], Options& options) {
     return false;
   }
 
-  if (!ParseInt("n", args, options.numThreads, false, std::thread::hardware_concurrency())) {
+  // Default to single threaded mode; or pass 0 for optimal, or specify
+  // number of threads.
+  int32_t threads = 0;
+  if (!ParseInt("n", args, threads, false, 1)) {
     return false;
   }
+  options.numThreads = threads ? threads : std::thread::hardware_concurrency();
 
   options.countRulesOnly = ParseBoolArg("count-rules-only", args);
   options.countItemSetsOnly = ParseBoolArg("count-itemsets-only", args);
@@ -487,7 +491,7 @@ void PrintUsage() {
   cout << "-minsup <s> ; sets minimum support. Required for apriori or tree based mining.\n";
   cout << "-automatic-ssdd-structural-drift-threshold ; sets automatic ssdd structural drift threshold. Required for SSDD mining.\n";
   cout << "-blockSize <s> ; sets blockSize. Required for stream based mining. (default 10000).\n";
-  cout << "-n <threads> ; sets number of threads. Default=autodetect.\n";
+  cout << "-n <threads> ; sets number of threads. Default=1, 0=autodetect, or specify number of threads to use. Note: not all algorithms are parallelized.\n";
   cout << "-count-rules-only ; only counts the rules, doesn't write them to disk.\n";
   cout << "-count-itemsets-only ; doesn't write itemsets or rules to disk, just counts itemsets.\n";
   cout << "-cp-sort-interval <n> ; number of transactions between resorting tree in cptree mode.\n";

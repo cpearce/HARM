@@ -234,7 +234,7 @@ void MineFPTree(FPTree* fptree,
     Log("Generating rules...\n");
     DurationTimer timer;
     GenerateRules(input, 0.9, 1.0, numRules, index, rulesOuputFilename, countRulesOnly);
-    Log("Generated %d rules in %.3lfs%s...\n", numRules, timer.Seconds());
+    Log("Generated %d rules in %.3lfs...\n", numRules, timer.Seconds());
   }
   Log("-----------------------------------------------\n");
 }

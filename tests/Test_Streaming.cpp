@@ -54,9 +54,9 @@ TEST(StructuralStreamDriftDetector, Spearman) {
   vector<float> leftRankedFloat(testV1.size());
   vector<float> rightRankedFloat(testV2.size());
 
-  for (int i = 0; i < testV1.size(); i++) {
-    leftRankedFloat[i] = i + 1;
-    rightRankedFloat[i] = i + 1;
+  for (size_t i = 0; i < testV1.size(); i++) {
+    leftRankedFloat[i] = float(i + 1);
+    rightRankedFloat[i] = float(i + 1);
   }
 
   sortAVGRanking(testV1, leftRankedFloat, cmp_lhs);

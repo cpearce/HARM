@@ -31,15 +31,15 @@ int edit_distance(const vector<Item>& v1, const vector<Item>& v2) {
   const size_t len2 = v2.size();
   vector<vector<int>> matrix(len1 + 1, vector<int>(len2 + 1, 0));
   //int matrix[len1 + 1][len2 + 1];
-  for (int i = 0; i <= len1; i++) {
+  for (size_t i = 0; i <= len1; i++) {
     matrix[i][0] = i;
   }
-  for (int i = 0; i <= len2; i++) {
+  for (size_t i = 0; i <= len2; i++) {
     matrix[0][i] = i;
   }
-  for (int i = 1; i <= len1; i++) {
+  for (size_t i = 1; i <= len1; i++) {
     auto c1 = v1[i - 1];
-    for (int j = 1; j <= len2; j++) {
+    for (size_t j = 1; j <= len2; j++) {
       auto c2 = v2[j - 1];
       if (c1 == c2) {
         matrix[i][j] = matrix[i - 1][j - 1];
@@ -230,7 +230,7 @@ void sortAVGRanking(const vector<Item>& itemList, vector<float>& rankedFloatList
   // read through the vector and rank it by double,
   // this means  1 2 3 4 5 where item 2 == item 3, to be ranked as 1 2.5 2.5 4 5
   int frequencyWithTheSameValue = 1;
-  for (int i = 1; i < itemList.size(); ++i) {
+  for (int i = 1; i < int(itemList.size()); ++i) {
     Item item1 = itemList.at(i - 1);
     Item item2 = itemList.at(i);
     if (compared_LHS.freq.Get(item1) == compared_LHS.freq.Get(item2)) {
@@ -277,7 +277,7 @@ double StructuralStreamDriftDetector::TreeAutomaticThreshold(
 
   //push item to a vector of leftItems
   uint32_t n_value = 0;
-  uint32_t maxLeftItempID = 0;
+  int maxLeftItempID = 0;
   while (leftIter.HasNext()) {
     n_value++;
     Item leftItem = leftIter.GetKey();
@@ -307,9 +307,9 @@ double StructuralStreamDriftDetector::TreeAutomaticThreshold(
   vector<float> rightRankedFloat(leftItems.size());
 
   // initialise float ranking, it starts with 1.0 2.0 3.0 4.0 5.0 ....
-  for (int i = 0; i < leftItems.size(); ++i) {
-    leftRankedFloat[i] = i + 1;
-    rightRankedFloat[i] = i + 1;
+  for (size_t i = 0; i < leftItems.size(); ++i) {
+    leftRankedFloat[i] = float(i + 1);
+    rightRankedFloat[i] = float(i + 1);
   }
 
   // calculate the float ranking, it may end up with sthing like 1.0 2.0 2.5 2.5 5.0 ...
@@ -409,7 +409,7 @@ void StructuralStreamDriftDetector::MaybePrintBlocks(const std::string& aMsg) {
     return;
   }
   Log(aMsg.c_str());
-  for (int i = 0; i < check_points.size(); i++) {
+  for (size_t i = 0; i < check_points.size(); i++) {
     Log("  Block %d [%d, %d]\n", i, check_points[i].start_tid, check_points[i].end_tid);
   }
 }

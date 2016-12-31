@@ -131,14 +131,14 @@ public:
   }
 
   std::string ToString() const;
-  std::string ToString(int stopDepth) const;
+  std::string ToString(uint32_t stopDepth) const;
   bool ToVector(std::vector<int32_t>* v) const;
-  bool ToVector(int stopDepth, std::vector<int32_t>* v) const;
+  bool ToVector(uint32_t stopDepth, std::vector<int32_t>* v) const;
   void ToFile(char* fp);
-  void ToFile(char* fp, int  stopDepth);
+  void ToFile(char* fp, uint32_t stopDepth);
   //CmpNode
   bool ToVector(std::vector<CmpNode>* v) const;
-  bool ToVector(int stopDepth, std::vector<CmpNode>* v) const;
+  bool ToVector(uint32_t stopDepth, std::vector<CmpNode>* v) const;
 
   void DumpToGraphViz(const char* filename) const;
 

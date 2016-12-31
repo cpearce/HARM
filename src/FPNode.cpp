@@ -73,7 +73,7 @@ string FPNode::ToString() const {
   return s;
 }
 
-string FPNode::ToString(int stopDepth) const {
+string FPNode::ToString(uint32_t stopDepth) const {
   if (depth >= stopDepth) {
     return string("");
   }
@@ -102,7 +102,7 @@ void FPNode::ToFile(char* fn) {
   }
 }
 
-void FPNode::ToFile(char* fn, int  stopDepth) {
+void FPNode::ToFile(char* fn, uint32_t stopDepth) {
   ofstream fp(fn);
   string s = this->ToString(stopDepth);
   if (fp.is_open()) {
@@ -121,7 +121,7 @@ bool FPNode::ToVector(vector<int32_t>* v) const {
   return true;
 }
 
-bool FPNode::ToVector(int stopDepth, vector<int32_t>* v) const {
+bool FPNode::ToVector(uint32_t stopDepth, vector<int32_t>* v) const {
   if (depth >= stopDepth) {
     return false;
   }
@@ -148,7 +148,7 @@ bool FPNode::ToVector(vector<CmpNode>* v) const {
   return true;
 }
 
-bool FPNode::ToVector(int stopDepth, vector<CmpNode>* v) const {
+bool FPNode::ToVector(uint32_t stopDepth, vector<CmpNode>* v) const {
   if (depth >= stopDepth) {
     return false;
   }

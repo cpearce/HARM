@@ -36,7 +36,7 @@ void TidList::Set(int aTid, bool aValue) {
   ASSERT(Get(aTid) == aValue);
 }
 
-unsigned TidList::SetChunk(int aVecIdx, int aChunkIdx, unsigned aVal) {
+unsigned TidList::SetChunk(size_t aVecIdx, size_t aChunkIdx, unsigned aVal) {
   if (aVecIdx >= mChunks.size()) {
     mChunks.resize(aVecIdx + 1);
   }
@@ -64,7 +64,7 @@ bool TidList::Get(int aTid) const {
   return (chunk & (1 << bitNum)) != 0;
 }
 
-unsigned TidList::GetChunk(int aVecId, int aChunkId) const {
+unsigned TidList::GetChunk(size_t aVecId, size_t aChunkId) const {
   if (aVecId >= mChunks.size() ||
       mChunks[aVecId] == 0 ||
       mChunks[aVecId]->size() <= aChunkId) {

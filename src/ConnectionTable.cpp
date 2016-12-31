@@ -247,7 +247,7 @@ void ConnectionTable::printChildren(ChildList children) {
     Item item = childrenIterator.GetKey();
     vector<Item> nextItems = childrenIterator.GetValue().nextItems.AsVector();
     Log("%d[%5.3f]:(", item.GetId(), childrenIterator.GetValue().weight);
-    for (int i = 0; i < nextItems.size(); i++) {
+    for (size_t i = 0; i < nextItems.size(); i++) {
       Log("%d", nextItems[i].GetId());
       if (i + 1 < nextItems.size()) {
         Log(", ");

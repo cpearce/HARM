@@ -89,7 +89,7 @@ int VariableWindowDataSet::Count(const Item& aItem) const {
   }
   const TidList& tidlist = index.at(item_idx);
   size_t count = 0;
-  for (auto i = 0; i < tidlist.size(); i++) {
+  for (size_t i = 0; i < tidlist.size(); i++) {
     const std::bitset<chunk_size>& b = tidlist[i];
     count += b.count();
   }

@@ -35,8 +35,8 @@ public:
     return aTid % (8 * sizeof(unsigned));
   }
 
-  unsigned GetChunk(int aVecId, int aChunkId) const;
-  unsigned SetChunk(int aVecIdx, int aChunkIdx, unsigned aVal);
+  unsigned GetChunk(size_t aVecId, size_t aChunkId) const;
+  unsigned SetChunk(size_t aVecIdx, size_t aChunkIdx, unsigned aVal);
 
   void Set(int aTid, bool aValue);
   bool Get(int aTid) const;

@@ -62,7 +62,7 @@ TEST(StructuralStreamDriftDetector, Spearman) {
   sortAVGRanking(testV1, leftRankedFloat, cmp_lhs);
   sortAVGRanking(testV2, rightRankedFloat, cmp_rhs);
 
-  // create ranking array and initialise them all to zero
+  // create ranking array and initialize them all to zero
   vector<float> leftItemsWithRanks(maxLeftItempID + 1);
   vector<float> rightItemsWithRanks(maxLeftItempID + 1);
   for (int i = 0; i < maxLeftItempID + 1; ++i) {

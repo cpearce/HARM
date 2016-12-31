@@ -149,13 +149,6 @@ public:
 
 private:
 
-  unsigned windowSize(unsigned tid, int blockSize) {
-    if (blockSize == 0) {
-      return tid;
-    }
-    return tid > blockSize ? (blockSize) : (tid);
-  }
-
   std::vector<Item> ranking;
 
   // Maps an item to its index in the ranking vector.

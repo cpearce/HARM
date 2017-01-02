@@ -155,7 +155,7 @@ protected:
 
 class DDTreeFunctor : public FPTreeFunctor {
 public:
-  void OnLoad(const std::vector<Item>& txn) {
+  void OnLoad(const std::vector<Item>& txn) override {
     ExtrapFunctor->OnLoad(txn);
     CpFunctor->OnLoad(txn);
     count++;
@@ -224,7 +224,7 @@ public:
 
   }
 
-  void OnUnload(const std::vector<Item>& txn) {
+  void OnUnload(const std::vector<Item>& txn) override {
     ExtrapFunctor->OnUnload(txn);
     CpFunctor->OnUnload(txn);
   }

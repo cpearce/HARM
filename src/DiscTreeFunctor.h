@@ -40,7 +40,7 @@ public:
   {
   }
 
-  void OnLoad(const std::vector<Item>& txn) {
+  void OnLoad(const std::vector<Item>& txn) override {
 
     std::vector<Item> t(txn);
     EnsureSorted(t);
@@ -99,7 +99,7 @@ public:
     FPTreeFunctor::OnLoad(txn);
   }
 
-  void OnUnload(const std::vector<Item>& txn) {
+  void OnUnload(const std::vector<Item>& txn) override {
     ASSERT(mIsStreaming); // Should only be called in streaming mode.
     std::vector<Item> t(txn);
     EnsureSorted(t);

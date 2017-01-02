@@ -34,7 +34,7 @@ static string GetPath(FPNode* n) {
   while (!n->IsRoot()) {
     string s = n->item;
     char buf[32];
-    sprintf(buf, "%s:%u%s", s.c_str(), n->count, (n->parent->IsRoot() ? "" : " "));
+    snprintf(buf, sizeof(buf), "%s:%u%s", s.c_str(), n->count, (n->parent->IsRoot() ? "" : " "));
     path.append(buf);
     n = n->parent;
   }
@@ -364,7 +364,7 @@ TEST(FPTree, TreeSorted) {
     vector<Item> v;
     for (unsigned i = 0; i < 4; i++) {
       char buf[4];
-      sprintf(buf, "%c", (char)('a' + i));
+      snprintf(buf, sizeof(buf), "%c", (char)('a' + i));
       v.push_back(Item(buf));
     }
     string s = Flatten(v);

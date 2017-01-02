@@ -32,11 +32,7 @@ using namespace std;
 
 bool ContainsAllSubSets(const set<ItemSet>& aContainer, const ItemSet& aItemSet) {
   ItemSet k(aItemSet);
-
-  set<Item>::const_iterator itr = aItemSet.mItems.begin();
-  set<Item>::const_iterator end = aItemSet.mItems.end();
-  for (itr; itr != end; itr++) {
-    Item item = *itr;
+  for (Item item : aItemSet.mItems) {
     k.mItems.erase(item);
     if (aContainer.find(k) == aContainer.end()) {
       // Can't find the subset in the container, fail.
@@ -67,7 +63,7 @@ GenerateSubCandidates(const set<ItemSet>& aCandidates,
   set<ItemSet> result;
   set<ItemSet>::const_iterator iter = aCandidates.cbegin();
   safeAdvance(iter, aCandidates.end(), aStartOffset);
-  for (iter; iter != aCandidates.end(); safeAdvance(iter, aCandidates.end(), aStep)) {
+  for (; iter != aCandidates.end(); safeAdvance(iter, aCandidates.end(), aStep)) {
     set<ItemSet>::const_iterator y = aCandidates.begin();
     for (const ItemSet& y : aCandidates) {
       const ItemSet& x = *iter;

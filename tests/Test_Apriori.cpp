@@ -20,7 +20,7 @@ bool CheckSet(string aExpected, set<ItemSet> aObserved) {
   set<ItemSet>::const_iterator itr = aObserved.begin();
   set<ItemSet>::const_iterator end = aObserved.end();
   int i = 0;
-  for (itr; itr != end; itr++, i++) {
+  for (; itr != end; itr++, i++) {
     vector<string> items;
     Tokenize(itemsets[i], items, ",");
     ItemSet item1;

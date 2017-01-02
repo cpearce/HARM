@@ -266,7 +266,7 @@ void FPNode::Insert(std::vector<Item>::const_iterator aBegin,
                     std::vector<Item>::const_iterator aEnd,
                     unsigned aCount) {
   FPNode* parent = this;
-  for (aBegin; aBegin != aEnd; aBegin++) {
+  for (; aBegin != aEnd; aBegin++) {
     Item item = *aBegin;
     FPNode* node = parent->GetOrCreateChild(item);
     node->count += aCount;
